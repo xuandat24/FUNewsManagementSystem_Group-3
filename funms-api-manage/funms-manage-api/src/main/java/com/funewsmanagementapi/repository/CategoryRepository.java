@@ -20,5 +20,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     Page<CategoryResponseDto> searchCategoriesForStaffAdmin(@Param("keyword") String keyword,
                                                                    @Param("isActive") Boolean isActive,
                                                                     Pageable pageable);
-
+    boolean existsByCategoryNameIgnoreCase(String categoryName);
+    boolean existsByCategoryNameIgnoreCaseAndCategoryIdNot(String categoryName, Long categoryId);
 }
