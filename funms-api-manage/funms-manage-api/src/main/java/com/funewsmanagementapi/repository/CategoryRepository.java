@@ -21,4 +21,5 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
                                                                    @Param("isActive") Boolean isActive,
                                                                     Pageable pageable);
     boolean existsByCategoryNameIgnoreCase(String categoryName);
+    boolean existsByCategoryNameIgnoreCaseAndCategoryIdNot(String categoryName, Long categoryId);
 }

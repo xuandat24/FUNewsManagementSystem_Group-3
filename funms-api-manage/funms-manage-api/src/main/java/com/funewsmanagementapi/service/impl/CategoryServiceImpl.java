@@ -1,6 +1,6 @@
 package com.funewsmanagementapi.service.impl;
 
-import com.funewsmanagementapi.dto.request.CreateCategoryRequestDto;
+import com.funewsmanagementapi.dto.request.CategoryRequestDto;
 import com.funewsmanagementapi.dto.response.CategoryResponseDto;
 import com.funewsmanagementapi.dto.response.NewsArticleResponseDto;
 import com.funewsmanagementapi.entity.Category;
@@ -11,6 +11,7 @@ import com.funewsmanagementapi.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,18 +65,15 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public CategoryResponseDto createCategory(CreateCategoryRequestDto dto) {
+    public CategoryResponseDto createCategory(CategoryRequestDto dto) {
         String catName = dto.getCategoryName().trim();
-        if(catName.isEmpty()) {
-            throw new RuntimeException("Category name is empty or null!");
-        }
 
-        if(categoryRepository.existsByCategoryNameIgnoreCase(catName)) {
+        if (categoryRepository.existsByCategoryNameIgnoreCase(catName)) {
             throw new RuntimeException("Category " + catName + " already exists!");
         }
 
         Category category = Category.builder()
-                .categoryName(dto.getCategoryName())
+                .categoryName(catName)
                 .categoryDescription(dto.getCategoryDescription())
                 .isActive(dto.getIsActive() != null ? dto.getIsActive() : true)
                 .build();
@@ -88,6 +86,35 @@ public class CategoryServiceImpl implements CategoryService {
                 .description(savedCategory.getCategoryDescription())
                 .active(savedCategory.getIsActive())
                 .totalArticles(0L)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public CategoryResponseDto updateCategory(Long id, CategoryRequestDto dto) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("Not found category id " + id));
+
+        String catName = dto.getCategoryName().trim();
+
+        if (categoryRepository.existsByCategoryNameIgnoreCaseAndCategoryIdNot(catName, id)) {
+            throw new RuntimeException("Category " + catName + " already exists!");
+        }
+
+        category.setCategoryName(catName);
+        category.setCategoryDescription(dto.getCategoryDescription());
+        category.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
+
+        Category updatedCategory = categoryRepository.save(category);
+
+        long totalArticles = (updatedCategory.getNewsArticles() != null) ? updatedCategory.getNewsArticles().size() : 0L;
+
+        return CategoryResponseDto.builder()
+                .id(updatedCategory.getCategoryId())
+                .name(updatedCategory.getCategoryName())
+                .description(updatedCategory.getCategoryDescription())
+                .active(updatedCategory.getIsActive())
+                .totalArticles(totalArticles)
                 .build();
     }
 }

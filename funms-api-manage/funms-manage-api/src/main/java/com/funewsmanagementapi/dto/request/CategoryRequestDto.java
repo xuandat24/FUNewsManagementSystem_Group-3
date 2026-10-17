@@ -8,7 +8,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateCategoryRequestDto {
+public class CategoryRequestDto {
     @NotBlank(message = "Tên danh mục không được để trống")
     @Size(max = 255, message = "Tên danh mục tối đa 255 ký tự")
     private String categoryName;

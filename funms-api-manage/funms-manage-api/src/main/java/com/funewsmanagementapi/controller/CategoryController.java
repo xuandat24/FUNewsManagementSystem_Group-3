@@ -1,6 +1,6 @@
 package com.funewsmanagementapi.controller;
 
-import com.funewsmanagementapi.dto.request.CreateCategoryRequestDto;
+import com.funewsmanagementapi.dto.request.CategoryRequestDto;
 import com.funewsmanagementapi.dto.response.CategoryResponseDto;
 import com.funewsmanagementapi.service.CategoryService;
 import jakarta.validation.Valid;
@@ -40,7 +40,12 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryResponseDto> createCategory(@Valid @RequestBody CreateCategoryRequestDto dto) {
+    public ResponseEntity<CategoryResponseDto> createCategory(@Valid @RequestBody CategoryRequestDto dto) {
         return new ResponseEntity<>(categoryService.createCategory(dto), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryRequestDto dto) {
+        return new ResponseEntity<>(categoryService.updateCategory(id, dto), HttpStatus.OK);
     }
 }
