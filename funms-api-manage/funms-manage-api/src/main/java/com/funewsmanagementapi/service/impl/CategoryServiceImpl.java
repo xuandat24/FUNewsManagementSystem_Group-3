@@ -117,4 +117,14 @@ public class CategoryServiceImpl implements CategoryService {
                 .totalArticles(totalArticles)
                 .build();
     }
+
+    @Override
+    @Transactional
+    public void deleteCategory(Long id) {
+        Category category = categoryRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Not found category id " + id));
+        if (category.getNewsArticles() != null && !category.getNewsArticles().isEmpty()){
+            throw new RuntimeException("Category " + category.getCategoryName() + " still has news articles! Must delete all its articles first!");
+        }
+        categoryRepository.delete(category);
+    }
 }
