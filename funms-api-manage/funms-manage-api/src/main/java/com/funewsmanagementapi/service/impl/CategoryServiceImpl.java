@@ -5,14 +5,13 @@ import com.funewsmanagementapi.dto.response.CategoryResponseDto;
 import com.funewsmanagementapi.dto.response.NewsArticleResponseDto;
 import com.funewsmanagementapi.entity.Category;
 import com.funewsmanagementapi.entity.NewsArticle;
+import com.funewsmanagementapi.exception.BadRequestException;
 import com.funewsmanagementapi.exception.RecordNotFoundException;
 import com.funewsmanagementapi.repository.CategoryRepository;
 import com.funewsmanagementapi.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,7 +68,7 @@ public class CategoryServiceImpl implements CategoryService {
         String catName = dto.getCategoryName().trim();
 
         if (categoryRepository.existsByCategoryNameIgnoreCase(catName)) {
-            throw new RuntimeException("Category " + catName + " already exists!");
+            throw new BadRequestException("Category " + catName + " already exists!");
         }
 
         Category category = Category.builder()
@@ -98,7 +97,7 @@ public class CategoryServiceImpl implements CategoryService {
         String catName = dto.getCategoryName().trim();
 
         if (categoryRepository.existsByCategoryNameIgnoreCaseAndCategoryIdNot(catName, id)) {
-            throw new RuntimeException("Category " + catName + " already exists!");
+            throw new BadRequestException("Category " + catName + " already exists!");
         }
 
         category.setCategoryName(catName);
@@ -123,7 +122,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteCategory(Long id) {
         Category category = categoryRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Not found category id " + id));
         if (category.getNewsArticles() != null && !category.getNewsArticles().isEmpty()){
-            throw new RuntimeException("Category " + category.getCategoryName() + " still has news articles! Must delete all its articles first!");
+            throw new BadRequestException("Category " + category.getCategoryName() + " still has news articles! Must delete all its articles first!");
         }
         categoryRepository.delete(category);
     }
