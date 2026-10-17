@@ -1,11 +1,12 @@
 package com.funewsmanagementapi.controller;
 
+import com.funewsmanagementapi.dto.request.CreateCategoryRequestDto;
 import com.funewsmanagementapi.dto.response.CategoryResponseDto;
 import com.funewsmanagementapi.service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,5 +37,10 @@ public class CategoryController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
         return ResponseEntity.ok(categoryService.findAllForStaffAdmin(keyword, isActive, PageRequest.of(page, size, Sort.by("categoryId").descending())));
+    }
+
+    @PostMapping
+    public ResponseEntity<CategoryResponseDto> createCategory(@Valid @RequestBody CreateCategoryRequestDto dto) {
+        return new ResponseEntity<>(categoryService.createCategory(dto), HttpStatus.CREATED);
     }
 }
