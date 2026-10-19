@@ -101,8 +101,14 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         category.setCategoryName(catName);
-        category.setCategoryDescription(dto.getCategoryDescription());
-        category.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
+
+        if (dto.getCategoryDescription() != null) {
+            category.setCategoryDescription(dto.getCategoryDescription());
+        }
+
+        if (dto.getIsActive() != null) {
+            category.setIsActive(dto.getIsActive());
+        }
 
         Category updatedCategory = categoryRepository.save(category);
 
