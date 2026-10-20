@@ -18,5 +18,5 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
     Page<TagResponseDto> searchTagsByName(@Param ("name") String name, Pageable pageable);
 
     boolean existsByTagNameIgnoreCase(String name);
-    boolean existsByTagNameIgnoreCaseAndTagIdIsNot(String tagName, Long tagId);
+    boolean existsByTagNameIgnoreCaseAndTagIdIsNot(String tagName, Long id);
 }

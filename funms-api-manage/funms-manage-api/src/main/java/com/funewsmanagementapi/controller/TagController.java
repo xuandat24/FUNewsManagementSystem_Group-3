@@ -39,4 +39,10 @@ public class TagController {
     public ResponseEntity<TagResponseDto> createTag(@Valid @RequestBody TagRequestDto tagRequestDto) {
         return new ResponseEntity<>(tagService.createTag(tagRequestDto), HttpStatus.CREATED);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TagResponseDto> updateTag(@Valid @RequestBody TagRequestDto tagRequestDto, @PathVariable Long id) {
+        return new ResponseEntity<>(tagService.updateTag(id, tagRequestDto), HttpStatus.OK);
+    }
+
 }

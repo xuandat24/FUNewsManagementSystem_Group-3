@@ -83,5 +83,30 @@ public class TagServiceImpl implements TagService {
                 .build();
     }
 
+    @Override
+    public TagResponseDto updateTag(Long id, TagRequestDto dto) {
+        Tag tag = tagRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Not found tag with id " + id));
+        String tagName = dto.getTagName().trim();
+        if(tagRepository.existsByTagNameIgnoreCaseAndTagIdIsNot(tagName, id)){
+            throw new BadRequestException("Tag " + tagName + " already exists");
+        }
+
+        tag.setTagName(tagName);
+        if(dto.getNote() != null ){
+            tag.setNote(dto.getNote().trim());
+        }
+
+        Tag updatedTag = tagRepository.save(tag);
+
+        long totalArticles = (updatedTag.getNewsArticles() != null) ? updatedTag.getNewsArticles().size() : 0L;
+
+        return TagResponseDto.builder()
+                .id(updatedTag.getTagId())
+                .tagName(updatedTag.getTagName())
+                .note(updatedTag.getNote())
+                .totalArticles(totalArticles)
+                .build();
+    }
+
 
 }
