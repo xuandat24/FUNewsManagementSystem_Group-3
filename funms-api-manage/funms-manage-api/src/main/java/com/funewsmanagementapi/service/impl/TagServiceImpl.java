@@ -5,6 +5,7 @@ import com.funewsmanagementapi.dto.response.NewsArticleResponseDto;
 import com.funewsmanagementapi.dto.response.TagResponseDto;
 import com.funewsmanagementapi.entity.NewsArticle;
 import com.funewsmanagementapi.entity.Tag;
+import com.funewsmanagementapi.exception.BadRequestException;
 import com.funewsmanagementapi.exception.RecordNotFoundException;
 import com.funewsmanagementapi.repository.TagRepository;
 import com.funewsmanagementapi.service.TagService;
@@ -59,10 +60,28 @@ public class TagServiceImpl implements TagService {
         return tagRepository.searchTagsByName(name, pageable);
     }
 
-//    @Override
-//    public TagResponseDto createTag(TagRequestDto dto) {
-//        return null;
-//    }
+    @Override
+    public TagResponseDto createTag(TagRequestDto dto) {
+        String tagName = dto.getTagName().trim();
+
+        if(tagRepository.existsByTagNameIgnoreCase(tagName)){
+            throw new BadRequestException("Tag " + tagName + " already exists");
+        }
+
+        Tag createdTag = Tag.builder()
+                .tagName(dto.getTagName())
+                .note(dto.getNote())
+                .build();
+
+        tagRepository.save(createdTag);
+
+        return TagResponseDto.builder()
+                .id(createdTag.getTagId())
+                .tagName(createdTag.getTagName())
+                .note(createdTag.getNote())
+                .totalArticles(0L)
+                .build();
+    }
 
 
 }
