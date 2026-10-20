@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/tags")
 public class TagController {
@@ -34,6 +36,11 @@ public class TagController {
     public ResponseEntity<TagResponseDto> findTagById(@PathVariable Long id) {
         TagResponseDto dto = tagService.findTagsById(id);
         return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<TagResponseDto>> getAllTagsForDropdown() {
+        return ResponseEntity.ok(tagService.findAllTagsList());
     }
 
     @PostMapping
