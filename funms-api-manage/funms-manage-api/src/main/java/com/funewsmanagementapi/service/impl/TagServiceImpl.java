@@ -64,7 +64,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<TagResponseDto> findAllTagsList() {
-        List<Tag> tagList = tagRepository.findAll();
+        List<Tag> tagList = tagRepository.findAllByOrderByTagNameAsc();
         List<TagResponseDto> dtoList = new ArrayList<>();
 
         for (Tag t : tagList) {

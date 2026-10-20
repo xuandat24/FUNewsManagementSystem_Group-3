@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/categories")
 public class CategoryController {
@@ -47,6 +49,11 @@ public class CategoryController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
         return ResponseEntity.ok(categoryService.findAllForGuest(keyword, PageRequest.of(page, size, Sort.by("categoryId").descending())));
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<CategoryResponseDto>> getAllActiveForDropdown() {
+        return ResponseEntity.ok(categoryService.findAllByIsActiveTrue());
     }
 
     @PostMapping
