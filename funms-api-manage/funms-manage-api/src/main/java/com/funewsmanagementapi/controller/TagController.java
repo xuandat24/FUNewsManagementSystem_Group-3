@@ -12,10 +12,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/tags")
 public class TagController {
     private final TagService tagService;
+
     @Autowired
     public TagController(TagService tagService) {
         this.tagService = tagService;
@@ -25,7 +28,7 @@ public class TagController {
     public ResponseEntity<Page<TagResponseDto>> findAllTags(
             @RequestParam(required = false) String name,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size){
+            @RequestParam(defaultValue = "5") int size) {
         return ResponseEntity.ok(tagService.findAllTags(name, PageRequest.of(page, size, Sort.by("tagId").descending())));
     }
 
@@ -33,6 +36,11 @@ public class TagController {
     public ResponseEntity<TagResponseDto> findTagById(@PathVariable Long id) {
         TagResponseDto dto = tagService.findTagsById(id);
         return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<TagResponseDto>> getAllTagsForDropdown() {
+        return ResponseEntity.ok(tagService.findAllTagsList());
     }
 
     @PostMapping
