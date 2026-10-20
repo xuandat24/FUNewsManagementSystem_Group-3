@@ -39,4 +39,16 @@ public class TagController {
     public ResponseEntity<TagResponseDto> createTag(@Valid @RequestBody TagRequestDto tagRequestDto) {
         return new ResponseEntity<>(tagService.createTag(tagRequestDto), HttpStatus.CREATED);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TagResponseDto> updateTag(@Valid @RequestBody TagRequestDto tagRequestDto, @PathVariable Long id) {
+        return new ResponseEntity<>(tagService.updateTag(id, tagRequestDto), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTag(@PathVariable Long id) {
+        tagService.deleteTag(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 }

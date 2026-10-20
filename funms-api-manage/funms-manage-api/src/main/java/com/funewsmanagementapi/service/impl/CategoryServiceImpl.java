@@ -73,7 +73,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         Category category = Category.builder()
                 .categoryName(catName)
-                .categoryDescription(dto.getCategoryDescription())
+                .categoryDescription(dto.getCategoryDescription() != null ? dto.getCategoryDescription().trim() : null)
                 .isActive(dto.getIsActive() != null ? dto.getIsActive() : true)
                 .build();
 
@@ -103,7 +103,7 @@ public class CategoryServiceImpl implements CategoryService {
         category.setCategoryName(catName);
 
         if (dto.getCategoryDescription() != null) {
-            category.setCategoryDescription(dto.getCategoryDescription());
+            category.setCategoryDescription(dto.getCategoryDescription().trim());
         }
 
         if (dto.getIsActive() != null) {
