@@ -8,5 +8,5 @@ import org.springframework.data.domain.Pageable;
 public interface TagService {
     TagResponseDto findTagsById(Long id);
     Page<TagResponseDto> findAllTags(String  name, Pageable pageable);
-//    TagResponseDto createTag(TagRequestDto dto);
+    TagResponseDto createTag(TagRequestDto dto);
 }

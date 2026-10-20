@@ -16,4 +16,7 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
             "WHERE (:name is null or lower(t.tagName) like concat('%', lower(:name), '%')) " +
             "GROUP BY t.tagId, t.tagName, t.note")
     Page<TagResponseDto> searchTagsByName(@Param ("name") String name, Pageable pageable);
+
+    boolean existsByTagNameIgnoreCase(String name);
+    boolean existsByTagNameIgnoreCaseAndTagIdIsNot(String tagName, Long tagId);
 }

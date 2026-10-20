@@ -1,7 +1,9 @@
 package com.funewsmanagementapi.controller;
 
+import com.funewsmanagementapi.dto.request.TagRequestDto;
 import com.funewsmanagementapi.dto.response.TagResponseDto;
 import com.funewsmanagementapi.service.TagService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,5 +35,8 @@ public class TagController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
-
+    @PostMapping
+    public ResponseEntity<TagResponseDto> createTag(@Valid @RequestBody TagRequestDto tagRequestDto) {
+        return new ResponseEntity<>(tagService.createTag(tagRequestDto), HttpStatus.CREATED);
+    }
 }
