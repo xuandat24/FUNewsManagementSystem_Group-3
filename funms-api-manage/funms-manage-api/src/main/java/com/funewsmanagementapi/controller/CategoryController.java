@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class CategoryController {
     @Autowired
     private final CategoryService categoryService;
+
     public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
@@ -37,6 +39,14 @@ public class CategoryController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
         return ResponseEntity.ok(categoryService.findAllForStaffAdmin(keyword, isActive, PageRequest.of(page, size, Sort.by("categoryId").descending())));
+    }
+
+    @GetMapping("/active")
+    public ResponseEntity<Page<CategoryResponseDto>> findAllActive(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        return ResponseEntity.ok(categoryService.findAllForGuest(keyword, PageRequest.of(page, size, Sort.by("categoryId").descending())));
     }
 
     @PostMapping

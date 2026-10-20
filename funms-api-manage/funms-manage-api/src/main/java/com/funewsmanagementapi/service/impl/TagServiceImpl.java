@@ -21,6 +21,7 @@ import java.util.List;
 @Service
 public class TagServiceImpl implements TagService {
     private final TagRepository tagRepository;
+
     @Autowired
     public TagServiceImpl(TagRepository tagRepository) {
         this.tagRepository = tagRepository;
@@ -32,7 +33,7 @@ public class TagServiceImpl implements TagService {
         Tag tag = tagRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Not found tag with id " + id));
         List<NewsArticleResponseDto> newsArticles = new ArrayList<>();
 
-        for(NewsArticle article : tag.getNewsArticles()){
+        for (NewsArticle article : tag.getNewsArticles()) {
             NewsArticleResponseDto dto = NewsArticleResponseDto.builder()
                     .newsArticleId(article.getNewsArticleId())
                     .newsTitle(article.getNewsTitle())
@@ -62,11 +63,26 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    public List<TagResponseDto> findAllTagsList() {
+        List<Tag> tagList = tagRepository.findAll();
+        List<TagResponseDto> dtoList = new ArrayList<>();
+
+        for (Tag t : tagList) {
+            TagResponseDto dto = TagResponseDto.builder()
+                    .id(t.getTagId())
+                    .tagName(t.getTagName().trim())
+                    .build();
+            dtoList.add(dto);
+        }
+        return dtoList;
+    }
+
+    @Override
     @Transactional
     public TagResponseDto createTag(TagRequestDto dto) {
         String tagName = dto.getTagName().trim();
 
-        if(tagRepository.existsByTagNameIgnoreCase(tagName)){
+        if (tagRepository.existsByTagNameIgnoreCase(tagName)) {
             throw new BadRequestException("Tag " + tagName + " already exists");
         }
 
@@ -90,12 +106,12 @@ public class TagServiceImpl implements TagService {
     public TagResponseDto updateTag(Long id, TagRequestDto dto) {
         Tag tag = tagRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Not found tag with id " + id));
         String tagName = dto.getTagName().trim();
-        if(tagRepository.existsByTagNameIgnoreCaseAndTagIdIsNot(tagName, id)){
+        if (tagRepository.existsByTagNameIgnoreCaseAndTagIdIsNot(tagName, id)) {
             throw new BadRequestException("Tag " + tagName + " already exists");
         }
 
         tag.setTagName(tagName);
-        if(dto.getNote() != null ){
+        if (dto.getNote() != null) {
             tag.setNote(dto.getNote().trim());
         }
 
@@ -115,7 +131,7 @@ public class TagServiceImpl implements TagService {
     @Transactional
     public void deleteTag(Long id) {
         Tag tag = tagRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Not found tag with id " + id));
-        if(tag.getNewsArticles() != null && !tag.getNewsArticles().isEmpty()){
+        if (tag.getNewsArticles() != null && !tag.getNewsArticles().isEmpty()) {
             throw new BadRequestException("Tag " + tag.getTagName() + " still has news articles! Delete all its article first!");
         }
         tagRepository.delete(tag);
