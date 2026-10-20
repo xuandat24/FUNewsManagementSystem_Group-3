@@ -58,9 +58,9 @@ public class NewsArticle {
     @Builder.Default
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-        name = "NewsTag",
-        joinColumns = @JoinColumn(name = "NewsArticleID"),
-        inverseJoinColumns = @JoinColumn(name = "TagID")
+            name = "NewsTag",
+            joinColumns = @JoinColumn(name = "NewsArticleID"),
+            inverseJoinColumns = @JoinColumn(name = "TagID")
     )
     private Set<Tag> tags = new HashSet<>();
 

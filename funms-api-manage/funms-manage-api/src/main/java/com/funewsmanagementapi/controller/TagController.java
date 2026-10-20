@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/tags")
 public class TagController {
     private final TagService tagService;
+
     @Autowired
     public TagController(TagService tagService) {
         this.tagService = tagService;
@@ -25,7 +26,7 @@ public class TagController {
     public ResponseEntity<Page<TagResponseDto>> findAllTags(
             @RequestParam(required = false) String name,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size){
+            @RequestParam(defaultValue = "5") int size) {
         return ResponseEntity.ok(tagService.findAllTags(name, PageRequest.of(page, size, Sort.by("tagId").descending())));
     }
 

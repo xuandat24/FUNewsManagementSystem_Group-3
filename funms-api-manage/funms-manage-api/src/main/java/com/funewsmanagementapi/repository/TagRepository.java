@@ -9,14 +9,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface TagRepository extends JpaRepository<Tag, Long> {
     @Query("SELECT new com.funewsmanagementapi.dto.response.TagResponseDto(t.tagId, t.tagName, t.note, COUNT(a)) " +
             "FROM Tag t LEFT JOIN t.newsArticles a " +
             "WHERE (:name is null or lower(t.tagName) like concat('%', lower(:name), '%')) " +
             "GROUP BY t.tagId, t.tagName, t.note")
-    Page<TagResponseDto> searchTagsByName(@Param ("name") String name, Pageable pageable);
+    Page<TagResponseDto> searchTagsByName(@Param("name") String name, Pageable pageable);
 
     boolean existsByTagNameIgnoreCase(String name);
+
     boolean existsByTagNameIgnoreCaseAndTagIdIsNot(String tagName, Long id);
 }
