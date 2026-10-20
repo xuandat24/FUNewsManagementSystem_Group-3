@@ -45,4 +45,10 @@ public class TagController {
         return new ResponseEntity<>(tagService.updateTag(id, tagRequestDto), HttpStatus.OK);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTag(@PathVariable Long id) {
+        tagService.deleteTag(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 }

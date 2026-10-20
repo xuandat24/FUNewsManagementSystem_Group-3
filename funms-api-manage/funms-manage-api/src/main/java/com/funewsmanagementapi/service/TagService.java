@@ -10,4 +10,5 @@ public interface TagService {
     Page<TagResponseDto> findAllTags(String  name, Pageable pageable);
     TagResponseDto createTag(TagRequestDto dto);
     TagResponseDto updateTag(Long id, TagRequestDto dto);
+    void deleteTag(Long id);
 }
