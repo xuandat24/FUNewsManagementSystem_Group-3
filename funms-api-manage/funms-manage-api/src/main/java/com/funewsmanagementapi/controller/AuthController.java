@@ -54,4 +54,11 @@ public class AuthController {
     public ApiResponseDto<String> testStaffPermission() {
         return ApiResponseDto.success("Xác thực quyền thành công!", "Bạn đang truy cập với vai trò Nhân viên (STAFF).");
     }
+
+    @PostMapping("/register")
+    @Operation(summary = "Đăng ký tài khoản mới (Mặc định quyền Staff)")
+    public ApiResponseDto<String> register(@Valid @RequestBody com.funewsmanagementapi.dto.request.RegisterRequestDto request) {
+        authService.register(request);
+        return ApiResponseDto.success("Đăng ký tài khoản thành công!", "Vui lòng chuyển sang trang đăng nhập.");
+    }
 }

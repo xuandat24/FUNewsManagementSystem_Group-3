@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
-const Login = ({ onLoginSuccess }) => {
+
+const Login = ({ onLoginSuccess, onSwitchToRegister }) => {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -147,8 +148,19 @@ const Login = ({ onLoginSuccess }) => {
             </button>
           </form>
 
-          {/* Khu vực hỗ trợ demo nhanh */}
-          <div className="mt-4 pt-3 border-top">
+          {/* Thay thế phần cuối card-body bằng đoạn này */}
+          <div className="text-center mt-3 pt-3 border-top">
+            <span className="text-muted small">Chưa có tài khoản? </span>
+            <button
+              type="button"
+              className="btn btn-link p-0 text-decoration-none small fw-bold"
+              onClick={onSwitchToRegister}
+            >
+              Đăng ký ngay
+            </button>
+          </div>
+
+          <div className="mt-3">
             <p className="text-muted small text-center mb-2">
               Điền nhanh dữ liệu mẫu demo:
             </p>
