@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
     @Query("SELECT new com.funewsmanagementapi.dto.response.CategoryResponseDto(c.categoryId, c.categoryName, c.categoryDescription, c.isActive, COUNT(a)) " +
@@ -18,8 +20,22 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             "AND (:isActive is null or c.isActive = :isActive) " +
             "GROUP BY c.categoryId, c.categoryName, c.categoryDescription, c.isActive")
     Page<CategoryResponseDto> searchCategoriesForStaffAdmin(@Param("keyword") String keyword,
-                                                                   @Param("isActive") Boolean isActive,
-                                                                    Pageable pageable);
+                                                            @Param("isActive") Boolean isActive,
+                                                            Pageable pageable);
+
     boolean existsByCategoryNameIgnoreCase(String categoryName);
+
     boolean existsByCategoryNameIgnoreCaseAndCategoryIdNot(String categoryName, Long categoryId);
+
+    List<Category> findAllByIsActiveTrue();
+
+    @Query("SELECT c " +
+            "FROM Category c " +
+            "WHERE (:keyword IS NULL " +
+            "OR LOWER(c.categoryName) LIKE CONCAT('%', LOWER(:keyword), '%') " +
+            "OR LOWER(c.categoryDescription) LIKE CONCAT('%', LOWER(:keyword), '%')) " +
+            "AND c.isActive = true")
+    Page<Category> searchCategoriesForGuest(
+            @Param("keyword") String keyword,
+            Pageable pageable);
 }

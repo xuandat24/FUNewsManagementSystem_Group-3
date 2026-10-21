@@ -21,6 +21,7 @@ import java.util.List;
 @Service
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
+
     @Autowired
     public CategoryServiceImpl(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
@@ -34,7 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         List<NewsArticleResponseDto> listNewsDto = new ArrayList<>();
 
-        for(NewsArticle article : category.getNewsArticles()) {
+        for (NewsArticle article : category.getNewsArticles()) {
             NewsArticleResponseDto dto = NewsArticleResponseDto.builder()
                     .newsArticleId(article.getNewsArticleId())
                     .newsTitle(article.getNewsTitle())
@@ -42,7 +43,7 @@ public class CategoryServiceImpl implements CategoryService {
                     .createdDate(article.getCreatedDate())
                     .newsSource(article.getNewsSource())
                     .newsStatus(article.getNewsStatus())
-                            .build();
+                    .build();
 
             listNewsDto.add(dto);
         }
@@ -63,6 +64,35 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public Page<CategoryResponseDto> findAllForGuest(String keyword, Pageable pageable) {
+        Page<Category> catPage = categoryRepository.searchCategoriesForGuest(keyword, pageable);
+
+        return catPage.map(c -> CategoryResponseDto.builder()
+                .id(c.getCategoryId())
+                .name(c.getCategoryName())
+                .description(c.getCategoryDescription())
+                .totalArticles((long) c.getNewsArticles().size())
+                .build());
+    }
+
+    @Override
+    public List<CategoryResponseDto> findAllByIsActiveTrue() {
+        List<Category> catList = categoryRepository.findAllByIsActiveTrue();
+
+        List<CategoryResponseDto> dtoList = new ArrayList<>();
+        for (Category c : catList) {
+            CategoryResponseDto dto = CategoryResponseDto.builder()
+                    .id(c.getCategoryId())
+                    .name(c.getCategoryName())
+                    .build();
+
+            dtoList.add(dto);
+        }
+
+        return dtoList;
+    }
+
+    @Override
     @Transactional
     public CategoryResponseDto createCategory(CategoryRequestDto dto) {
         String catName = dto.getCategoryName().trim();
@@ -73,7 +103,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         Category category = Category.builder()
                 .categoryName(catName)
-                .categoryDescription(dto.getCategoryDescription())
+                .categoryDescription(dto.getCategoryDescription() != null ? dto.getCategoryDescription().trim() : null)
                 .isActive(dto.getIsActive() != null ? dto.getIsActive() : true)
                 .build();
 
@@ -101,8 +131,14 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         category.setCategoryName(catName);
-        category.setCategoryDescription(dto.getCategoryDescription());
-        category.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
+
+        if (dto.getCategoryDescription() != null) {
+            category.setCategoryDescription(dto.getCategoryDescription().trim());
+        }
+
+        if (dto.getIsActive() != null) {
+            category.setIsActive(dto.getIsActive());
+        }
 
         Category updatedCategory = categoryRepository.save(category);
 
@@ -121,7 +157,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public void deleteCategory(Long id) {
         Category category = categoryRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Not found category id " + id));
-        if (category.getNewsArticles() != null && !category.getNewsArticles().isEmpty()){
+        if (category.getNewsArticles() != null && !category.getNewsArticles().isEmpty()) {
             throw new BadRequestException("Category " + category.getCategoryName() + " still has news articles! Must delete all its articles first!");
         }
         categoryRepository.delete(category);
