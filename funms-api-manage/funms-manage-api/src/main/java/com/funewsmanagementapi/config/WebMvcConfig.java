@@ -26,6 +26,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .addPathPatterns("/api/v1/**") // Kiểm tra toàn bộ API
                 .excludePathPatterns(
                         "/api/v1/auth/login", // Cho phép đăng nhập tự do
+                        "/api/v1/auth/register",
                         "/swagger-ui/**",
                         "/swagger-ui.html",
                         "/v3/api-docs/**"

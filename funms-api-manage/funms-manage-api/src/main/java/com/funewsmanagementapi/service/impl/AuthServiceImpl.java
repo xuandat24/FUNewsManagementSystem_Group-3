@@ -1,6 +1,7 @@
 package com.funewsmanagementapi.service.impl;
 
 import com.funewsmanagementapi.dto.request.LoginRequestDto;
+import com.funewsmanagementapi.dto.request.RegisterRequestDto;
 import com.funewsmanagementapi.dto.response.LoginResponseDto;
 import com.funewsmanagementapi.entity.SystemAccount;
 import com.funewsmanagementapi.exception.BadRequestException;
@@ -99,5 +100,24 @@ public class AuthServiceImpl implements AuthService {
                 .accountRole(account.getAccountRole())
                 .roleName(roleName)
                 .build();
+    }
+
+    @Override
+    public void register(RegisterRequestDto request) {
+        // 1. Kiểm tra email đã tồn tại chưa
+        if (accountRepository.existsByAccountEmail(request.getAccountEmail())) {
+            throw new BadRequestException("Email này đã được sử dụng trong hệ thống!");
+        }
+
+        // 2. Tạo tài khoản mới (Mặc định AccountRole = 2 dành cho Staff)
+        SystemAccount newAccount = SystemAccount.builder()
+                .accountName(request.getAccountName().trim())
+                .accountEmail(request.getAccountEmail().trim())
+                .accountPassword(request.getAccountPassword().trim())
+                .accountRole(2) // Gán vai trò Staff mặc định
+                .build();
+
+        // 3. Lưu vào database
+        accountRepository.save(newAccount);
     }
 }
