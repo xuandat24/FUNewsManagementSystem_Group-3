@@ -24,14 +24,14 @@ function Site() {
   return <>
     <header className="site-nav"><div className="container nav-content">
       <Link className="brand" to="/">FU News</Link>
-      <nav className="nav-links" aria-label="?i?u h??ng ch?nh">
-        <Link to="/">Trang ch?</Link>
-        {canManageNews && <Link to="/staff/news">Staff ? B?i vi?t</Link>}
+      <nav className="nav-links" aria-label="Điều hướng chính">
+        <Link to="/">Trang chủ</Link>
+        {canManageNews && <Link to="/staff/news">Staff · Bài viết</Link>}
       </nav>
       <div className="nav-auth">
-        {user ? <><span className="nav-user">{user.accountName}</span><button className="auth-button auth-login" onClick={logout}>??ng xu?t</button></> : <>
-          <Link className="auth-button auth-login" to="/login">??ng nh?p</Link>
-          <Link className="auth-button auth-register" to="/register">??ng k?</Link>
+        {user ? <><span className="nav-user">{user.accountName}</span><button className="auth-button auth-login" onClick={logout}>Đăng xuất</button></> : <>
+          <Link className="auth-button auth-login" to="/login">Đăng nhập</Link>
+          <Link className="auth-button auth-register" to="/register">Đăng ký</Link>
         </>}
       </div>
     </div></header>
