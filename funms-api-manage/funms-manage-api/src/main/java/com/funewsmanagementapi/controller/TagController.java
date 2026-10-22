@@ -36,10 +36,10 @@ public class TagController {
     })
     @GetMapping
     public ResponseEntity<Page<TagResponseDto>> findAllTags(
-            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
-        return ResponseEntity.ok(tagService.findAllTags(name, PageRequest.of(page, size, Sort.by("tagId").descending())));
+        return ResponseEntity.ok(tagService.findAllTags(keyword, PageRequest.of(page, size, Sort.by("tagId").descending())));
     }
 
     @Operation(summary = "Get tag by id")
