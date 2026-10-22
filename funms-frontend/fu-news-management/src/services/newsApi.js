@@ -3,8 +3,12 @@ const BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1/news'
 
 async function request(path, options = {}) {
   const response = await fetch(BASE + path, {
-    headers: { 'Content-Type': 'application/json' },
     ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(localStorage.getItem('token') ? { Authorization: `Bearer ${localStorage.getItem('token')}` } : {}),
+      ...options.headers,
+    },
   })
   if (response.status === 204) return null
   const data = await response.json().catch(() => ({}))
