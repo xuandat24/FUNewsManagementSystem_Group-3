@@ -3,7 +3,6 @@ package com.funewsmanagementapi.controller;
 import com.funewsmanagementapi.dto.request.LoginRequestDto;
 import com.funewsmanagementapi.dto.response.ApiResponseDto;
 import com.funewsmanagementapi.dto.response.LoginResponseDto;
-import com.funewsmanagementapi.security.RequireRole;
 import com.funewsmanagementapi.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,7 +33,7 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    @RequireRole // Bắt buộc phải đăng nhập (Role 1 hoặc Role 2 đều được)
+    // Bắt buộc phải đăng nhập (Role 1 hoặc Role 2 đều được)
     @Operation(summary = "Lấy thông tin tài khoản hiện tại từ Token")
     public ApiResponseDto<LoginResponseDto> getCurrentUser(@RequestHeader("Authorization") String authHeader) {
         LoginResponseDto user = authService.getCurrentUser(authHeader);
@@ -42,14 +41,14 @@ public class AuthController {
     }
 
     @GetMapping("/admin-only-test")
-    @RequireRole({1}) // CHỈ CÓ ADMIN (Role = 1) MỚI VÀO ĐƯỢC
+    // CHỈ CÓ ADMIN (Role = 1) MỚI VÀO ĐƯỢC
     @Operation(summary = "API thử nghiệm quyền Admin (Role = 1)")
     public ApiResponseDto<String> testAdminPermission() {
         return ApiResponseDto.success("Xác thực quyền thành công!", "Bạn đang truy cập với vai trò Quản trị viên (ADMIN).");
     }
 
     @GetMapping("/staff-only-test")
-    @RequireRole({2}) // CHỈ CÓ STAFF (Role = 2) MỚI VÀO ĐƯỢC
+    // CHỈ CÓ STAFF (Role = 2) MỚI VÀO ĐƯỢC
     @Operation(summary = "API thử nghiệm quyền Staff (Role = 2)")
     public ApiResponseDto<String> testStaffPermission() {
         return ApiResponseDto.success("Xác thực quyền thành công!", "Bạn đang truy cập với vai trò Nhân viên (STAFF).");

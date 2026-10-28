@@ -27,7 +27,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public LoginResponseDto login(LoginRequestDto request) {
         String identifier = request.getIdentifier().trim();
-        String password = request.getPassword().trim();
+        String password = request.getPassword();
 
         SystemAccount account = null;
 
