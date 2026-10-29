@@ -201,6 +201,34 @@ export default function CategoryManagementPage() {
         </tbody>
       </Table>
 
+      <div className="d-flex justify-content-between align-items-center mt-3">
+        <span>Tổng cộng: {totalElements} danh mục</span>
+
+        <div>
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            disabled={page === 0}
+            onClick={() => setPage(page - 1)}
+            className="me-2"
+          >
+            ← Trước
+          </Button>
+
+          <span>Trang {page + 1} / {totalPages}</span>
+
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            disabled={page === totalPages - 1}
+            onClick={() => setPage(page + 1)}
+            className="ms-2"
+          >
+            Sau →
+          </Button>
+        </div>
+      </div>
+
       <CategoryFormModal
         show={showFormModal}
         onClose={handleCloseForm}
