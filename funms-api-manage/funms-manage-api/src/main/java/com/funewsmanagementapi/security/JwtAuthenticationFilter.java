@@ -1,57 +1,60 @@
 package com.funewsmanagementapi.security;
 
 
+import com.funewsmanagementapi.service.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException{
         try {
-            String authHeader = request.getHeader("Authorization");
-            if(authHeader!= null && authHeader.startsWith("Bearer")){
-                String token = authHeader.substring(7);
+            String jwt = parseJwt(request);
+            if(jwt!= null && jwtTokenProvider.validateToken(jwt)) {
+                Claims claims = jwtTokenProvider.getClaimsFromToken(jwt);
+                String email = claims.get("email", String.class);
 
-                if(jwtTokenProvider.validateToken(token)){
-                    Claims claims = jwtTokenProvider.getClaimsFromToken(token);
-                    Long userId = Long.parseLong(claims.getSubject());
-                    Integer role = claims.get("role", Integer.class);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-                    //Map số 1 và số 2 thành quyền chuẩn của spring security ("ROLE_ADMIN" : "ROLE_STAFF")
-                    String roleName = (role != null && role == 1) ? "ROLE_ADMIN" : "ROLE_STAFF";
-                    List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(roleName));
-
-                    // Lưu thông tin người dùng vào SecurityContext
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId, null, authorities);
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-        } catch (Exception ex){
-            logger.error("không thể thiết lập xác thực người dùng trong Security Context");
+        } catch (Exception e){
+            logger.error("Cannot set user authentication: {}", e.getMessage());
         }
         filterChain.doFilter(request, response);
+    }
+
+    private String parseJwt(HttpServletRequest request) {
+        String headerAuth = request.getHeader("Authorization");
+        if (headerAuth != null && headerAuth.startsWith("Bearer ")) {
+            return headerAuth.substring(7);
+        }
+        return null;
     }
 }

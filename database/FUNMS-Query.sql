@@ -86,12 +86,13 @@ BEGIN TRY
     BEGIN TRANSACTION;
 
     -- 1. Chèn SystemAccount (4 tài khoản)
+    -- mật khẩu đã thực hiện việc băm, mặc định là 123 - mực đích kiểm thử đăng nhập
     INSERT INTO SystemAccount (AccountName, AccountEmail, AccountRole, AccountPassword)
     VALUES
-    (N'FUNews Administrator', N'admin@funews.edu', 1, N'admin123'),
-    (N'Dinh Vuong - News Editor', N'dinhvuong@funews.edu', 2, N'staff123'),
-    (N'Dinh Phu - News Editor', N'dinhphu@funews.edu', 2, N'staff123'),
-    (N'Xuan Dat - News Editor', N'xuandat@funews.edu', 2, N'staff123');
+    (N'FUNews Administrator', N'admin@funews.edu', 1, N'$2a$12$Xjbw619LjxWp3QCUV6wNaO6HmPTYeY9Li78TopwdRVDM7hSvAtMI6'),
+    (N'Dinh Vuong - News Editor', N'dinhvuong@funews.edu', 2, N'$2a$12$Xjbw619LjxWp3QCUV6wNaO6HmPTYeY9Li78TopwdRVDM7hSvAtMI6'),
+    (N'Dinh Phu - News Editor', N'dinhphu@funews.edu', 2, N'$2a$12$Xjbw619LjxWp3QCUV6wNaO6HmPTYeY9Li78TopwdRVDM7hSvAtMI6'),
+    (N'Xuan Dat - News Editor', N'xuandat@funews.edu', 2, N'$2a$12$Xjbw619LjxWp3QCUV6wNaO6HmPTYeY9Li78TopwdRVDM7hSvAtMI6');
 
     -- 2. Chèn Category (15 danh mục)
     INSERT INTO Category (CategoryName, CategoryDescription, IsActive)
