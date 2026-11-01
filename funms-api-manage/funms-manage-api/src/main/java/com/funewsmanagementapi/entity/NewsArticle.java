@@ -2,7 +2,6 @@ package com.funewsmanagementapi.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +14,6 @@ import java.util.Set;
 @Entity
 @Table(name = "NewsArticle")
 public class NewsArticle {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "NewsArticleID")
@@ -55,20 +53,24 @@ public class NewsArticle {
     @Column(name = "ModifiedDate")
     private LocalDateTime modifiedDate;
 
+    // Legacy articles remain PUBLISHED; new Contributor articles start as DRAFT.
+    @Builder.Default
+    @Column(name = "WorkflowStatus", length = 30)
+    private String workflowStatus = "PUBLISHED";
+
+    @Column(name = "ReviewFeedback", columnDefinition = "NVARCHAR(MAX)")
+    private String reviewFeedback;
+
     @Builder.Default
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "NewsTag",
+    @JoinTable(name = "NewsTag",
             joinColumns = @JoinColumn(name = "NewsArticleID"),
-            inverseJoinColumns = @JoinColumn(name = "TagID")
-    )
+            inverseJoinColumns = @JoinColumn(name = "TagID"))
     private Set<Tag> tags = new HashSet<>();
 
     @PrePersist
     protected void onCreate() {
-        if (createdDate == null) {
-            createdDate = LocalDateTime.now();
-        }
+        if (createdDate == null) createdDate = LocalDateTime.now();
     }
 
     @PreUpdate
