@@ -3,6 +3,7 @@ import { BrowserRouter, Link, Navigate, Route, Routes, useNavigate } from 'react
 import CustomerHomePage from './pages/CustomerHomePage.jsx'
 import NewsDetailPage from './pages/NewsDetailPage.jsx'
 import StaffNewsPage from './pages/StaffNewsPage.jsx'
+import MyArticlesPage from './pages/MyArticlesPage.jsx'
 import Login from './components/LoginComponent.jsx'
 import Register from './components/RegisterComponent.jsx'
 import './App.css'
@@ -20,13 +21,15 @@ function Site() {
     setUser(null)
     navigate('/')
   }
-  const canManageNews = user && [1, 2].includes(Number(user.accountRole))
+  const canManageNews = user && Number(user.accountRole) === 1
+  const isContributor = user && Number(user.accountRole) === 2
   return <>
     <header className="site-nav"><div className="container nav-content">
       <Link className="brand" to="/">FU News</Link>
       <nav className="nav-links" aria-label="Điều hướng chính">
         <Link to="/">Trang chủ</Link>
-        {canManageNews && <Link to="/staff/news">Staff · Bài viết</Link>}
+        {canManageNews && <Link to="/staff/news">Admin · Bài viết</Link>}
+        {isContributor && <Link to="/contributor/my-articles">Bài viết của tôi</Link>}
       </nav>
       <div className="nav-auth">
         {user ? <><span className="nav-user">{user.accountName}</span><button className="auth-button auth-login" onClick={logout}>Đăng xuất</button></> : <>
@@ -38,9 +41,10 @@ function Site() {
     <Routes>
       <Route path="/" element={<CustomerHomePage />} />
       <Route path="/news/:id" element={<NewsDetailPage />} />
-      <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login onLoginSuccess={data => { setUser(data); navigate('/', { replace: true }) }} onSwitchToRegister={() => navigate('/register')} />} />
+      <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login onLoginSuccess={data => { setUser(data); navigate(Number(data.accountRole) === 2 ? '/contributor/my-articles' : '/', { replace: true }) }} onSwitchToRegister={() => navigate('/register')} />} />
       <Route path="/register" element={user ? <Navigate to="/" replace /> : <Register onSwitchToLogin={() => navigate('/login')} />} />
       <Route path="/staff/news" element={canManageNews ? <StaffNewsPage /> : <Navigate to={user ? '/' : '/login'} replace />} />
+      <Route path="/contributor/my-articles" element={isContributor ? <MyArticlesPage /> : <Navigate to={user ? '/' : '/login'} replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   </>
