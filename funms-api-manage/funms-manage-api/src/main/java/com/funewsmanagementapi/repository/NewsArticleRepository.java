@@ -5,6 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface NewsArticleRepository extends JpaRepository<NewsArticle, Long> {
-    // Don gian cho bai tap: lay danh sach, loc tai Java service.
     List<NewsArticle> findAllByOrderByCreatedDateDesc();
+
+    // Only articles written by the signed-in Contributor.
+    List<NewsArticle> findByCreatedBy_AccountIdOrderByCreatedDateDesc(Long accountId);
+
+    boolean existsByNewsTitleIgnoreCase(String newsTitle);
+
+    boolean existsByNewsTitleIgnoreCaseAndNewsArticleIdNot(String newsTitle, Long id);
 }
