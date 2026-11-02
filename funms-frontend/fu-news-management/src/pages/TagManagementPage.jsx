@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Button, Col, Form, Row, Table } from "react-bootstrap";
-import { searchAllTags, deleteTag, createTag, updateTag } from "../services/tagsApi";
+import TagFormModal from "../components/TagFormModal.jsx";
+import DeleteConfirmModal from "../components/DeleteConfirmModal.jsx";
+import {
+  searchAllTags,
+  deleteTag,
+  createTag,
+  updateTag,
+} from "../services/tagsApi";
 
 export default function TagManagementPage() {
   const [tags, setTags] = useState([]);
@@ -126,7 +133,7 @@ export default function TagManagementPage() {
       </Form>
 
       <Table striped bordered hover className="mt-3">
-        <thead colSpan="5">
+        <thead>
           <tr>
             <th>ID</th>
             <th>Tên tag</th>
@@ -138,7 +145,7 @@ export default function TagManagementPage() {
         <tbody>
           {tags.length === 0 ? (
             <tr>
-              <td colSpan="6" className="text-center text-muted py-3">
+              <td colSpan="5" className="text-center text-muted py-3">
                 Không có thẻ tag nào.
               </td>
             </tr>
@@ -179,8 +186,47 @@ export default function TagManagementPage() {
       </Table>
 
       <div className="d-flex justify-content-between align-items-center mt-3">
-        <span>Tổng cộng: {totalElements} danh mục</span>
+        <span>Tổng cộng: {totalElements} thẻ tag</span>
+
+        <div>
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            disabled={page === 0}
+            onClick={() => setPage(page - 1)}
+            className="me-2"
+          >
+            Trang trước
+          </Button>
+          <span className="me-2">
+            Trang {totalPages === 0 ? 0 : page + 1} / {totalPages}
+          </span>
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            disabled={page + 1 >= totalPages}
+            onClick={() => setPage(page + 1)}
+          >
+            Trang sau
+          </Button>
+        </div>
       </div>
+
+      <TagFormModal
+        show={showFormModal}
+        onClose={handleCloseForm}
+        onSave={handleSaveForm}
+        tag={selectedTag}
+        error={formError}
+      />
+      <DeleteConfirmModal
+        show={showDeleteModal}
+        onClose={handleCloseDelete}
+        onConfirm={handleConfirmDelete}
+        title="Xác nhận xóa Tag"
+        message={`Bạn có chắc muốn xóa tag "${deletingTag?.tagName}" không?`}
+        error={deleteError}
+      />
     </div>
   );
 }

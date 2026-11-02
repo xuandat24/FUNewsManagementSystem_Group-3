@@ -6,6 +6,8 @@ import StaffNewsPage from './pages/StaffNewsPage.jsx'
 import MyArticlesPage from './pages/MyArticlesPage.jsx'
 import Login from './components/LoginComponent.jsx'
 import Register from './components/RegisterComponent.jsx'
+import CategoryManagementPage from './pages/CategoryManagementPage.jsx'
+import TagManagementPage from './pages/TagManagementPage.jsx'
 import './App.css'
 
 function Site() {
@@ -23,6 +25,7 @@ function Site() {
   }
   const canManageNews = user && Number(user.accountRole) === 1
   const isContributor = user && Number(user.accountRole) === 2
+  const canManageCategoryAndTag = user && [1, 2].includes(Number(user.accountRole));
   return <>
     <header className="site-nav"><div className="container nav-content">
       <Link className="brand" to="/">FU News</Link>
@@ -30,6 +33,8 @@ function Site() {
         <Link to="/">Trang chủ</Link>
         {canManageNews && <Link to="/staff/news">Admin · Bài viết</Link>}
         {isContributor && <Link to="/contributor/my-articles">Bài viết của tôi</Link>}
+        {canManageCategoryAndTag && <Link to="/manage/categories">Danh mục</Link>}
+        {canManageCategoryAndTag && <Link to="/manage/tags">Tag</Link>}
       </nav>
       <div className="nav-auth">
         {user ? <><span className="nav-user">{user.accountName}</span><button className="auth-button auth-login" onClick={logout}>Đăng xuất</button></> : <>
@@ -45,6 +50,8 @@ function Site() {
       <Route path="/register" element={user ? <Navigate to="/" replace /> : <Register onSwitchToLogin={() => navigate('/login')} />} />
       <Route path="/staff/news" element={canManageNews ? <StaffNewsPage /> : <Navigate to={user ? '/' : '/login'} replace />} />
       <Route path="/contributor/my-articles" element={isContributor ? <MyArticlesPage /> : <Navigate to={user ? '/' : '/login'} replace />} />
+      <Route path="/manage/categories" element={canManageCategoryAndTag ? <CategoryManagementPage /> : <Navigate to={user ? '/' : '/login'} replace />} />
+      <Route path="/manage/tags" element={canManageCategoryAndTag ? <TagManagementPage /> : <Navigate to={user ? '/' : '/login'} replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   </>

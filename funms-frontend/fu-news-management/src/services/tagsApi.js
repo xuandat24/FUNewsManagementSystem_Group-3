@@ -1,5 +1,13 @@
 const BASE_URL = import.meta.env.VITE_TAGS_API_URL|| 'http://localhost:8080/api/v1/tags';
 
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return {
+    'Content-Type': 'application/json',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+};
+
 export async function searchAllTags(keyword = '', page = 0, size = 5) {
     const params = new URLSearchParams();
     params.set('page', page);
@@ -9,7 +17,9 @@ export async function searchAllTags(keyword = '', page = 0, size = 5) {
         params.set('keyword', keyword.trim()); 
     }
 
-    const res = await fetch(`${BASE_URL}?${params.toString()}`);
+    const res = await fetch(`${BASE_URL}?${params.toString()}`, {
+        headers: getAuthHeaders()
+    });
     const resData = await res.json();
 
     if(!res.ok) throw new Error(resData.message || "Lỗi khi tải tags");
@@ -17,7 +27,9 @@ export async function searchAllTags(keyword = '', page = 0, size = 5) {
 }
 
 export async function getTagById(id){
-    const res = await fetch(`${BASE_URL}/${id}`)
+    const res = await fetch(`${BASE_URL}/${id}`, {
+        headers: getAuthHeaders()
+    });
     const resData = await res.json();
 
     if(!res.ok) throw new Error(resData.message || "Lỗi khi tải tags");
@@ -25,7 +37,9 @@ export async function getTagById(id){
 }
 
 export async function getAllTagsDropdown(){
-    const res = await fetch(`${BASE_URL}/all`)
+    const res = await fetch(`${BASE_URL}/all`, {
+        headers: getAuthHeaders()
+    });
     const resData = await res.json();
 
     if(!res.ok) throw new Error(resData.message || "Lỗi khi tải tags");
@@ -35,9 +49,7 @@ export async function getAllTagsDropdown(){
 export async function createTag(data){
     const res = await fetch(`${BASE_URL}`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(data)
     });
 
@@ -49,9 +61,7 @@ export async function createTag(data){
 export async function updateTag(id, data){
     const res = await fetch(`${BASE_URL}/${id}`, {
         method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(data)
     });
 
@@ -62,7 +72,8 @@ export async function updateTag(id, data){
 
 export async function deleteTag(id){
     const res = await fetch(`${BASE_URL}/${id}`, {
-        method: 'DELETE'    
+        method: 'DELETE',
+        headers: getAuthHeaders()
     });
 
     if(!res.ok){
