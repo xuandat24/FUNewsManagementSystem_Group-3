@@ -1,6 +1,7 @@
 package com.funewsmanagementapi.controller;
 
 import com.funewsmanagementapi.dto.request.NewsArticleRequestDto;
+import com.funewsmanagementapi.dto.response.NewsArticleResponseDto;
 import com.funewsmanagementapi.dto.response.NewsDetailDto;
 import com.funewsmanagementapi.entity.*;
 import com.funewsmanagementapi.repository.*;
@@ -8,6 +9,8 @@ import com.funewsmanagementapi.service.NewsArticleService;
 import com.funewsmanagementapi.security.RequireRole;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -71,7 +74,7 @@ public class NewsArticleController {
 
     @GetMapping("/categories")
     public List<Option> categoryOptions() {
-        return categories.findAll().stream().map(c -> new Option(c.getCategoryId(), c.getCategoryName())).toList();
+        return categories.findAllByIsActiveTrue().stream().map(c -> new Option(c.getCategoryId(), c.getCategoryName())).toList();
     }
     @GetMapping("/authors")
     @RequireRole({1})
@@ -81,5 +84,18 @@ public class NewsArticleController {
     @GetMapping("/tags")
     public List<Option> tagOptions() {
         return tags.findAll().stream().map(t -> new Option(t.getTagId(), t.getTagName())).toList();
+    }
+    @GetMapping("/pending")
+    @RequireRole({1})
+    public List<NewsArticleResponseDto> getPendingArticles() {
+        return service.getPendingArticles();
+    }
+    @PostMapping("/{id}/approve")
+    @RequireRole({1})
+    public ResponseEntity<String> approveArticle(
+            @PathVariable Long id,
+            @RequestAttribute("currentUserId") Long editorId) {
+        service.approveArticle(id, editorId);
+        return ResponseEntity.ok("Phê duyệt bài viết thành công!");
     }
 }
