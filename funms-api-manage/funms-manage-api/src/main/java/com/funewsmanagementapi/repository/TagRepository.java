@@ -15,9 +15,9 @@ import java.util.List;
 public interface TagRepository extends JpaRepository<Tag, Long> {
     @Query("SELECT new com.funewsmanagementapi.dto.response.TagResponseDto(t.tagId, t.tagName, t.note, COUNT(a)) " +
             "FROM Tag t LEFT JOIN t.newsArticles a " +
-            "WHERE (:name is null or lower(t.tagName) like concat('%', lower(:name), '%')) " +
+            "WHERE (:keyword is null or lower(t.tagName) like concat('%', lower(:keyword), '%')) " +
             "GROUP BY t.tagId, t.tagName, t.note")
-    Page<TagResponseDto> searchTagsByName(@Param("name") String name, Pageable pageable);
+    Page<TagResponseDto> searchTagsByName(@Param("keyword") String keyword, Pageable pageable);
     List<Tag> findAllByOrderByTagNameAsc();
     boolean existsByTagNameIgnoreCase(String name);
 

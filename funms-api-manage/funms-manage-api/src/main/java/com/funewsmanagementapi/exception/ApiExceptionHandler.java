@@ -20,7 +20,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> invalid(MethodArgumentNotValidException e) {
         String message = e.getBindingResult().getFieldErrors().isEmpty() ? "Du lieu khong hop le"
-                : e.getBindingResult().getFieldErrors().get(0).getField() + ": khong hop le";
+                : e.getBindingResult().getFieldErrors().getFirst().getField() + ": khong hop le";
         return ResponseEntity.badRequest().body(Map.of("message", message));
     }
 }
