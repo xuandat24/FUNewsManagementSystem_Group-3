@@ -6,3 +6,16 @@
 .news-card .card-title { line-height: 1.4; }
 .article-detail { max-width: 900px; }
 .article-content { white-space: pre-wrap; line-height: 1.8; }
+
+.nav-content { display: flex; align-items: center; gap: 2rem; padding-block: 1rem; flex-wrap: wrap; }
+.nav-links, .nav-auth { display: flex; align-items: center; gap: 1rem; }
+.nav-auth { margin-left: auto; gap: .65rem; }
+.auth-button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: .6rem 1.2rem; border: 1px solid #194880; border-radius: 10px; font-weight: 600; transition: background-color .15s, box-shadow .15s; }
+.auth-login { background: #fff; color: #194880; }
+.auth-login:hover { background: #edf4ff; }
+.site-nav .auth-register { background: #194880; color: #fff; box-shadow: 0 3px 8px #19488020; }
+.site-nav .auth-register:hover { background: #103561; }
+.auth-button:focus-visible { outline: 3px solid #85b6ff; outline-offset: 3px; }
+.nav-user { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.auth-page { min-height: calc(100vh - 80px); padding-block: 2rem; background: linear-gradient(145deg, #f6f8fc, #e4efff); }
+@media (max-width: 575px) { .nav-content { gap: .8rem; } .nav-links { margin-left: auto; } .nav-auth { width: 100%; justify-content: flex-end; } .auth-button { flex: 1; } }

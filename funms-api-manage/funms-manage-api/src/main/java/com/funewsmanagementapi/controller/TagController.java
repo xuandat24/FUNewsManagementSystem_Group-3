@@ -2,6 +2,7 @@ package com.funewsmanagementapi.controller;
 
 import com.funewsmanagementapi.dto.request.TagRequestDto;
 import com.funewsmanagementapi.dto.response.TagResponseDto;
+import com.funewsmanagementapi.security.RequireRole;
 import com.funewsmanagementapi.service.TagService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequireRole({1, 2})
 @Tag(name = "Tags", description = "CRUD Tags")
 @RestController
 @RequestMapping("/api/v1/tags")
@@ -36,10 +38,10 @@ public class TagController {
     })
     @GetMapping
     public ResponseEntity<Page<TagResponseDto>> findAllTags(
-            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
-        return ResponseEntity.ok(tagService.findAllTags(name, PageRequest.of(page, size, Sort.by("tagId").descending())));
+        return ResponseEntity.ok(tagService.findAllTags(keyword, PageRequest.of(page, size, Sort.by("tagId").descending())));
     }
 
     @Operation(summary = "Get tag by id")

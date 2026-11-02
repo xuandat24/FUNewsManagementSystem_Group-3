@@ -31,8 +31,7 @@ public class NewsArticleService {
     public List<NewsDetailDto> list(String keyword, Long categoryId, boolean publicOnly) {
         String search = keyword == null ? "" : keyword.trim().toLowerCase(Locale.ROOT);
         return newsRepository.findAllByOrderByCreatedDateDesc().stream()
-                .filter(a -> !publicOnly || (Boolean.TRUE.equals(a.getNewsStatus())
-                        && a.getCategory() != null && Boolean.TRUE.equals(a.getCategory().getIsActive())))
+                .filter(a -> !publicOnly || isPublic(a))
                 .filter(a -> categoryId == null || (a.getCategory() != null
                         && categoryId.equals(a.getCategory().getCategoryId())))
                 .filter(a -> search.isEmpty() || a.getNewsTitle().toLowerCase(Locale.ROOT).contains(search)
@@ -43,8 +42,7 @@ public class NewsArticleService {
     @Transactional(readOnly = true)
     public NewsDetailDto get(Long id, boolean publicOnly) {
         NewsArticle article = find(id);
-        if (publicOnly && (!Boolean.TRUE.equals(article.getNewsStatus())
-                || article.getCategory() == null || !Boolean.TRUE.equals(article.getCategory().getIsActive()))) {
+        if (publicOnly && !isPublic(article)) {
             throw new RecordNotFoundException("Khong tim thay bai viet");
         }
         return toDto(article);
@@ -70,6 +68,15 @@ public class NewsArticleService {
         // NewsTag duoc xoa theo FK cascade cua SQL; clear de JPA quan ly bang lien ket.
         article.getTags().clear();
         newsRepository.delete(article);
+    }
+
+    // Only approved/published articles may appear to customers.
+    private boolean isPublic(NewsArticle article) {
+        return Boolean.TRUE.equals(article.getNewsStatus())
+                && (article.getWorkflowStatus() == null
+                    || "PUBLISHED".equals(article.getWorkflowStatus()))
+                && article.getCategory() != null
+                && Boolean.TRUE.equals(article.getCategory().getIsActive());
     }
 
     private NewsArticle find(Long id) {

@@ -58,8 +58,8 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Page<TagResponseDto> findAllTags(String name, Pageable pageable) {
-        return tagRepository.searchTagsByName(name, pageable);
+    public Page<TagResponseDto> findAllTags(String keyword, Pageable pageable) {
+        return tagRepository.searchTagsByName(keyword, pageable);
     }
 
     @Override
