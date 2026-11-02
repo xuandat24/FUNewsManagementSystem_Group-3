@@ -1,104 +1,108 @@
-import React, { useEffect, useState } from 'react'
-import { Badge, Button, Col, Form, Row, Table } from 'react-bootstrap'
-import CategoryFormModal from '../components/CategoryFormModal.jsx'
-import DeleteConfirmModal from '../components/DeleteConfirmModal.jsx'
-import { createCategory, deleteCategory, getCategories, updateCategory } from '../services/categoriesApi'
+import React, { useEffect, useState } from "react";
+import { Badge, Button, Col, Form, Row, Table } from "react-bootstrap";
+import CategoryFormModal from "../components/CategoryFormModal.jsx";
+import DeleteConfirmModal from "../components/DeleteConfirmModal.jsx";
+import {
+  createCategory,
+  deleteCategory,
+  getCategories,
+  updateCategory,
+} from "../services/categoriesApi";
 
 export default function CategoryManagementPage() {
-  const [categories, setCategories] = useState([])
+  const [categories, setCategories] = useState([]);
 
-  const [keyword, setKeyword] = useState('')
-  const [isActive, setIsActive] = useState('')
-  const [page, setPage] = useState(0)
-  const [size, setSize] = useState(5)
+  const [keyword, setKeyword] = useState("");
+  const [isActive, setIsActive] = useState("");
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(5);
 
-  const [totalElements, setTotalElements] = useState(0)
-  const [totalPages, setTotalPages] = useState(0)
+  const [totalElements, setTotalElements] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [deletingCat, setDeletingCat] = useState(null)
-  const [deleteError, setDeleteError] = useState('')
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingCat, setDeletingCat] = useState(null);
+  const [deleteError, setDeleteError] = useState("");
 
-  const [showFormModal, setShowFormModal] = useState(false)
-  const [selectedCat, setSelectedCat] = useState(null)
-  const [formError, setFormError] = useState('')
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [selectedCat, setSelectedCat] = useState(null);
+  const [formError, setFormError] = useState("");
 
   const fetchCategories = async () => {
     try {
-      const resData = await getCategories(page, size, keyword, isActive)
-      setCategories(resData.content || [])
-      setTotalElements(resData.totalElements || 0)
-      setTotalPages(resData.totalPages || 0)
+      const resData = await getCategories(page, size, keyword, isActive);
+      setCategories(resData.content || []);
+      setTotalElements(resData.totalElements || 0);
+      setTotalPages(resData.totalPages || 0);
     } catch (err) {
-      console.error(err.message)
+      console.error(err.message);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchCategories()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, size, isActive])
+    fetchCategories();
+  }, [page, size, isActive]);
 
   const handleSearch = (e) => {
-    e.preventDefault()
-    setPage(0)
-    fetchCategories()
-  }
+    e.preventDefault();
+    setPage(0);
+    fetchCategories();
+  };
 
   const handleOpenDelete = (cat) => {
-    setDeletingCat(cat)
-    setDeleteError('')
-    setShowDeleteModal(true)
-  }
+    setDeletingCat(cat);
+    setDeleteError("");
+    setShowDeleteModal(true);
+  };
 
   const handleCloseDelete = () => {
-    setShowDeleteModal(false)
-    setDeletingCat(null)
-    setDeleteError('')
-  }
+    setShowDeleteModal(false);
+    setDeletingCat(null);
+    setDeleteError("");
+  };
 
   const handleConfirmDelete = async () => {
-    if (!deletingCat) return
+    if (!deletingCat) return;
     try {
-      await deleteCategory(deletingCat.id)
-      handleCloseDelete()
-      fetchCategories()
+      await deleteCategory(deletingCat.id);
+      handleCloseDelete();
+      fetchCategories();
     } catch (err) {
-      setDeleteError(err.message || 'Lỗi khi xóa danh mục')
+      setDeleteError(err.message || "Lỗi khi xóa danh mục");
     }
-  }
+  };
 
   const handleOpenCreate = () => {
-    setSelectedCat(null)
-    setFormError('')
-    setShowFormModal(true)
-  }
+    setSelectedCat(null);
+    setFormError("");
+    setShowFormModal(true);
+  };
 
   const handleOpenEdit = (cat) => {
-    setSelectedCat(cat)
-    setFormError('')
-    setShowFormModal(true)
-  }
+    setSelectedCat(cat);
+    setFormError("");
+    setShowFormModal(true);
+  };
 
   const handleCloseForm = () => {
-    setShowFormModal(false)
-    setSelectedCat(null)
-    setFormError('')
-  }
+    setShowFormModal(false);
+    setSelectedCat(null);
+    setFormError("");
+  };
 
   const handleSaveForm = async (formData) => {
     try {
       if (selectedCat) {
-        await updateCategory(selectedCat.id, formData)
+        await updateCategory(selectedCat.id, formData);
       } else {
-        await createCategory(formData)
+        await createCategory(formData);
       }
-      handleCloseForm()
-      fetchCategories()
+      handleCloseForm();
+      fetchCategories();
     } catch (err) {
-      setFormError(err.message || 'Lỗi khi lưu danh mục')
+      setFormError(err.message || "Lỗi khi lưu danh mục");
     }
-  }
+  };
 
   return (
     <div>
@@ -124,8 +128,8 @@ export default function CategoryManagementPage() {
             <Form.Select
               value={isActive}
               onChange={(e) => {
-                setIsActive(e.target.value)
-                setPage(0)
+                setIsActive(e.target.value);
+                setPage(0);
               }}
             >
               <option value="">Tất cả</option>
@@ -167,15 +171,17 @@ export default function CategoryManagementPage() {
                 <td>
                   <strong>{cat.name}</strong>
                 </td>
-                <td>{cat.description || '—'}</td>
+                <td>{cat.description || "—"}</td>
                 <td>
-                  <Badge bg={cat.active ? 'success' : 'secondary'}>
-                    {cat.active ? 'Đang hoạt động' : 'Không hoạt động'}
+                  <Badge bg={cat.active ? "success" : "secondary"}>
+                    {cat.active ? "Đang hoạt động" : "Không hoạt động"}
                   </Badge>
                 </td>
                 <td>
                   <Badge bg="info" text="dark">
-                    {cat.totalArticles > 0 ? cat.totalArticles + ' bài' : '0 bài'}
+                    {cat.totalArticles > 0
+                      ? cat.totalArticles + " bài"
+                      : "0 bài"}
                   </Badge>
                 </td>
                 <td>
@@ -215,7 +221,9 @@ export default function CategoryManagementPage() {
             ← Trước
           </Button>
 
-          <span>Trang {page + 1} / {totalPages}</span>
+          <span>
+            Trang {page + 1} / {totalPages}
+          </span>
 
           <Button
             variant="outline-secondary"
@@ -246,5 +254,5 @@ export default function CategoryManagementPage() {
         error={deleteError}
       />
     </div>
-  )
+  );
 }
