@@ -19,7 +19,7 @@ export default function CategoryFormModal({
     if (category) {
       setName(category.name || "");
       setDescription(category.description || "");
-      setActive(category.active ?? true);
+      setActive(category.active != null ? category.active : true);
     } else {
       setName("");
       setDescription("");

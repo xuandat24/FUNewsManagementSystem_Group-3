@@ -31,4 +31,7 @@ export const newsApi = {
   create: (body) => request('', { method: 'POST', body: JSON.stringify(body) }),
   update: (id, body) => request(`/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
   remove: (id) => request(`/${id}`, { method: 'DELETE' }),
+  getPending: () => request('/pending', { method: 'GET' }),
+  approve: (id) => request('/${id}/approve', { method: 'POST' }),
+  getDetail: (id) => request(`/${id}`, { method: 'GET' }),
 }

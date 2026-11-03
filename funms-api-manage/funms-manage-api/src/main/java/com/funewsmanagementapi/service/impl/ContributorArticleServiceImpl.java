@@ -92,6 +92,7 @@ public class ContributorArticleServiceImpl implements ContributorArticleService 
     }
 
     @Override
+    @Transactional
     public ContributorArticleDto requestChanges(Long id, Long editorId, String feedback) {
         SystemAccount editor = accountRepo.findById(editorId)
                 .orElseThrow(() -> new RecordNotFoundException("Không tìm thấy Editor/Admin"));
