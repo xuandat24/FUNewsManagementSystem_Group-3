@@ -7,7 +7,7 @@ import {
   deleteCategory,
   getCategories,
   updateCategory,
-} from "../services/categoriesApi";
+} from "../services/categoriesApiAxios";
 
 export default function CategoryManagementPage() {
   const [categories, setCategories] = useState([]);

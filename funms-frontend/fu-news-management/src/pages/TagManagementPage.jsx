@@ -7,7 +7,7 @@ import {
   deleteTag,
   createTag,
   updateTag,
-} from "../services/tagsApi";
+} from "../services/tagsApiAxios";
 
 export default function TagManagementPage() {
   const [tags, setTags] = useState([]);
