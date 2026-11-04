@@ -10,6 +10,8 @@ public interface NewsArticleRepository extends JpaRepository<NewsArticle, Long> 
     // Only articles written by the signed-in Contributor.
     List<NewsArticle> findByCreatedBy_AccountIdOrderByCreatedDateDesc(Long accountId);
 
+    List<NewsArticle> findByWorkflowStatusOrderByCreatedDateDesc(String workflowStatus);
+
     boolean existsByNewsTitleIgnoreCase(String newsTitle);
 
     boolean existsByNewsTitleIgnoreCaseAndNewsArticleIdNot(String newsTitle, Long id);
