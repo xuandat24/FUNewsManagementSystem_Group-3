@@ -11,6 +11,7 @@ import Login from './components/LoginComponent.jsx'
 import Register from './components/RegisterComponent.jsx'
 import CategoryManagementPage from './pages/CategoryManagementPage.jsx'
 import TagManagementPage from './pages/TagManagementPage.jsx'
+import AccountManagement from './pages/AccountManagement.jsx'
 import './App.css'
 
 function Site() {
@@ -68,11 +69,13 @@ function Site() {
         <Route path="articles" element={<StaffNewsPage />} />
         <Route path="categories" element={<CategoryManagementPage />} />
         <Route path="tags" element={<TagManagementPage />} />
+        <Route path="accounts" element={<AccountManagement />} />
       </Route>
       <Route path="/staff/news" element={<Navigate to={isAdmin ? '/admin/articles' : isContributor ? '/contributor/my-articles' : '/login'} replace />} />
       <Route path="/contributor/my-articles" element={isContributor ? <MyArticlesPage /> : <Navigate to={isAdmin ? '/admin' : '/login'} replace />} />
       <Route path="/manage/categories" element={isAdmin ? <Navigate to="/admin/categories" replace /> : isContributor ? <CategoryManagementPage /> : <Navigate to="/login" replace />} />
       <Route path="/manage/tags" element={isAdmin ? <Navigate to="/admin/tags" replace /> : isContributor ? <TagManagementPage /> : <Navigate to="/login" replace />} />
+      <Route path="/manage/accounts" element={isAdmin ? <Navigate to="/admin/accounts" replace /> : <Navigate to="/login" replace />} />
       <Route path="*" element={<Navigate to={isAdmin ? '/admin' : '/'} replace />} />
     </Routes>
   </>
