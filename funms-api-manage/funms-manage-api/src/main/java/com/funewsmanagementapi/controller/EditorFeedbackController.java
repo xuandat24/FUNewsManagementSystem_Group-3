@@ -7,8 +7,7 @@ import com.funewsmanagementapi.service.ContributorArticleService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
-// Minimal review endpoint for the Contributor feedback loop.
-// Actor 2 can extend the Editor area later with approval/publishing.
+// Review endpoints protected by Admin role from AuthInterceptor.
 @RestController
 @RequestMapping("/api/v1/editor/articles")
 @RequireRole({1})
@@ -17,6 +16,29 @@ public class EditorFeedbackController {
 
     public EditorFeedbackController(ContributorArticleService service) {
         this.service = service;
+    }
+
+    @GetMapping
+    public java.util.List<ContributorArticleDto> list() {
+        return service.reviewArticles();
+    }
+
+    @GetMapping("/pending")
+    public java.util.List<ContributorArticleDto> pending() {
+        return service.pendingArticles();
+    }
+
+    @PostMapping("/{id}/approve")
+    public ContributorArticleDto approve(@PathVariable Long id,
+            @RequestAttribute("currentUserId") Long editorId) {
+        return service.approve(id, editorId);
+    }
+
+    @PostMapping("/{id}/reject")
+    public ContributorArticleDto reject(@PathVariable Long id,
+            @RequestAttribute("currentUserId") Long editorId,
+            @Valid @RequestBody EditorFeedbackRequestDto data) {
+        return service.reject(id, editorId, data.feedback());
     }
 
     @PostMapping("/{id}/request-changes")

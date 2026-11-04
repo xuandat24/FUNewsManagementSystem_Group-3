@@ -44,7 +44,7 @@ export default function StaffNewsPage() {
 
   return <main className="container py-4">
     <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
-      <div><h1 className="h3 mb-1">Quản lý bài viết</h1><p className="text-muted mb-0">Staff / News Article Management</p></div>
+      <div><h1 className="h3 mb-1">Quản lý bài viết</h1><p className="text-muted mb-0">Admin / Quản lý bài viết</p></div>
       <Button onClick={() => setEditing(null)}>+ Thêm bài viết</Button>
     </div>
     {error && <p role="alert" className="alert alert-danger">{error}</p>}

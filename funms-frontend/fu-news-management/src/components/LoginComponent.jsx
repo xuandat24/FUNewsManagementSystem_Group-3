@@ -1,3 +1,4 @@
+import httpClient from '../services/httpClient.js';
 import { useState } from "react";
 
 
@@ -20,20 +21,14 @@ const Login = ({ onLoginSuccess, onSwitchToRegister }) => {
 
     setLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_AUTH_API_URL || 'http://localhost:8080/api/v1/auth'}/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          identifier: identifier.trim(),
-          password: password,
-        }),
-      });
+      const { data: result } = await httpClient.post(
+        import.meta.env.VITE_AUTH_API_URL
+          ? `${import.meta.env.VITE_AUTH_API_URL}/login`
+          : '/auth/login',
+        { identifier: identifier.trim(), password }
+      );
 
-      const result = await response.json();
-
-      if (response.ok && result.status === 200) {
+      if (result.status === 200) {
         // Lưu token và thông tin người dùng vào LocalStorage
         localStorage.setItem("token", result.data.token);
         localStorage.setItem("currentUser", JSON.stringify(result.data));
@@ -44,8 +39,8 @@ const Login = ({ onLoginSuccess, onSwitchToRegister }) => {
       } else {
         setErrorMsg(result.message || "Đăng nhập không thành công!");
       }
-    } catch {
-      setErrorMsg("Không thể kết nối đến máy chủ Backend (Port 8080)!");
+    } catch (error) {
+      setErrorMsg(error.message);
     } finally {
       setLoading(false);
     }
