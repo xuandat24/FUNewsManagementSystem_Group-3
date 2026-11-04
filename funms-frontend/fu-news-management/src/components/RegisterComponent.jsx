@@ -1,3 +1,4 @@
+import httpClient from '../services/httpClient.js';
 import { useState } from "react";
 
 const Register = ({ onSwitchToLogin }) => {
@@ -27,22 +28,18 @@ const Register = ({ onSwitchToLogin }) => {
 
     setLoading(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_AUTH_API_URL || 'http://localhost:8080/api/v1/auth'}/register`,
+      const { data: result } = await httpClient.post(
+        import.meta.env.VITE_AUTH_API_URL
+          ? `${import.meta.env.VITE_AUTH_API_URL}/register`
+          : '/auth/register',
         {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            accountName: formData.accountName.trim(),
-            accountEmail: formData.accountEmail.trim(),
-            accountPassword: formData.accountPassword,
-          }),
-        },
+          accountName: formData.accountName.trim(),
+          accountEmail: formData.accountEmail.trim(),
+          accountPassword: formData.accountPassword,
+        }
       );
 
-      const result = await response.json();
-
-      if (response.ok && result.status === 200) {
+      if (result.status === 200) {
         setSuccessMsg("Đăng ký thành công! Đang chuyển hướng...");
         setTimeout(() => {
           onSwitchToLogin();
@@ -50,8 +47,8 @@ const Register = ({ onSwitchToLogin }) => {
       } else {
         setErrorMsg(result.message || "Đăng ký không thành công!");
       }
-    } catch {
-      setErrorMsg("Không thể kết nối đến máy chủ Backend!");
+    } catch (error) {
+      setErrorMsg(error.message);
     } finally {
       setLoading(false);
     }

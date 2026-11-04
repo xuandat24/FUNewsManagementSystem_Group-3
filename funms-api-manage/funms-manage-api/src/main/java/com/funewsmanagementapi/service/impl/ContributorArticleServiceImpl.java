@@ -94,21 +94,86 @@ public class ContributorArticleServiceImpl implements ContributorArticleService 
     @Override
     @Transactional
     public ContributorArticleDto requestChanges(Long id, Long editorId, String feedback) {
-        SystemAccount editor = accountRepo.findById(editorId)
-                .orElseThrow(() -> new RecordNotFoundException("Không tìm thấy Editor/Admin"));
-        if (!Integer.valueOf(1).equals(editor.getAccountRole()))
-            throw new BadRequestException("Chỉ Admin/Editor được gửi feedback");
-
-        NewsArticle article = newsRepo.findById(id)
-                .orElseThrow(() -> new RecordNotFoundException("Không tìm thấy bài viết ID " + id));
-        if (!"PENDING_REVIEW".equals(article.getWorkflowStatus()))
-            throw new BadRequestException("Chỉ bài đang chờ duyệt mới nhận yêu cầu chỉnh sửa");
+        SystemAccount editor = requireAdmin(editorId);
+        NewsArticle article = findPending(id);
+        if (feedback == null || feedback.isBlank())
+            throw new BadRequestException("Can nhap noi dung yeu cau chinh sua");
 
         article.setWorkflowStatus("CHANGES_REQUESTED");
         article.setReviewFeedback(feedback.trim());
         article.setNewsStatus(false);
         article.setUpdatedBy(editor);
         return toDto(newsRepo.save(article));
+    }
+
+    // Admin can see the queue and review history, including old published posts.
+    @Override
+    @Transactional(readOnly = true)
+    public List<ContributorArticleDto> reviewArticles() {
+        List<ContributorArticleDto> result = new ArrayList<>();
+        for (NewsArticle article : newsRepo.findAllByOrderByCreatedDateDesc()) {
+            result.add(toDto(article));
+        }
+        return result;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ContributorArticleDto> pendingArticles() {
+        List<ContributorArticleDto> result = new ArrayList<>();
+        for (NewsArticle article : newsRepo.findByWorkflowStatusOrderByCreatedDateDesc("PENDING_REVIEW")) {
+            result.add(toDto(article));
+        }
+        return result;
+    }
+
+    @Override
+    public ContributorArticleDto approve(Long id, Long editorId) {
+        SystemAccount editor = requireAdmin(editorId);
+        NewsArticle article = findPending(id);
+        if (article.getNewsTitle() == null || article.getNewsTitle().isBlank()
+                || article.getHeadline() == null || article.getHeadline().isBlank()
+                || article.getNewsContent() == null || article.getNewsContent().isBlank()
+                || article.getCategory() == null
+                || !Boolean.TRUE.equals(article.getCategory().getIsActive())) {
+            throw new BadRequestException("Bai viet chua du thong tin hoac danh muc da bi khoa");
+        }
+
+        article.setWorkflowStatus("PUBLISHED");
+        article.setNewsStatus(true);
+        article.setReviewFeedback(null);
+        article.setUpdatedBy(editor);
+        return toDto(newsRepo.save(article));
+    }
+
+    @Override
+    public ContributorArticleDto reject(Long id, Long editorId, String feedback) {
+        SystemAccount editor = requireAdmin(editorId);
+        NewsArticle article = findPending(id);
+        if (feedback == null || feedback.isBlank())
+            throw new BadRequestException("Can nhap ly do tu choi bai viet");
+
+        article.setWorkflowStatus("REJECTED");
+        article.setNewsStatus(false);
+        article.setReviewFeedback(feedback.trim());
+        article.setUpdatedBy(editor);
+        return toDto(newsRepo.save(article));
+    }
+
+    private SystemAccount requireAdmin(Long editorId) {
+        SystemAccount editor = accountRepo.findById(editorId)
+                .orElseThrow(() -> new RecordNotFoundException("Khong tim thay Admin"));
+        if (!Integer.valueOf(1).equals(editor.getAccountRole()))
+            throw new BadRequestException("Chi Admin duoc duyet bai");
+        return editor;
+    }
+
+    private NewsArticle findPending(Long id) {
+        NewsArticle article = newsRepo.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("Khong tim thay bai viet ID " + id));
+        if (!"PENDING_REVIEW".equals(article.getWorkflowStatus()))
+            throw new BadRequestException("Bai viet khong o trang thai cho duyet");
+        return article;
     }
 
     private NewsArticle ownArticle(Long id, Long authorId) {
@@ -162,6 +227,8 @@ public class ContributorArticleServiceImpl implements ContributorArticleService 
                 article.getHeadline(), article.getNewsContent(), article.getNewsSource(),
                 categoryId, categoryName, article.getWorkflowStatus(),
                 article.getReviewFeedback(), article.getCreatedDate(),
-                article.getModifiedDate(), ids);
+                article.getModifiedDate(), ids,
+                article.getCreatedBy() == null ? null : article.getCreatedBy().getAccountId(),
+                article.getCreatedBy() == null ? "Khong ro" : article.getCreatedBy().getAccountName());
     }
 }
