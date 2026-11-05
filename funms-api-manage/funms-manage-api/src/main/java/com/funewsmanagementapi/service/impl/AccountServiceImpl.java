@@ -10,16 +10,19 @@ import com.funewsmanagementapi.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public AccountServiceImpl(AccountRepository accountRepository) {
+    public AccountServiceImpl(AccountRepository accountRepository, PasswordEncoder passwordEncoder) {
         this.accountRepository = accountRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     private AccountResponseDto toDto(SystemAccount account) {
@@ -70,7 +73,7 @@ public class AccountServiceImpl implements AccountService {
                 .accountName(accountName)
                 .accountEmail(accountEmail)
                 .accountRole(dto.getAccountRole())
-                .accountPassword(dto.getAccountPassword().trim())
+                .accountPassword(passwordEncoder.encode(dto.getAccountPassword().trim()))
                 .build();
 
         SystemAccount savedAcc = accountRepository.save(acc);
@@ -99,7 +102,7 @@ public class AccountServiceImpl implements AccountService {
         account.setAccountRole(dto.getAccountRole());
 
         if (dto.getAccountPassword() != null && !dto.getAccountPassword().trim().isEmpty()) {
-            account.setAccountPassword(dto.getAccountPassword().trim());
+            account.setAccountPassword(passwordEncoder.encode(dto.getAccountPassword().trim()));
         }
 
         SystemAccount savedAccount = accountRepository.save(account);

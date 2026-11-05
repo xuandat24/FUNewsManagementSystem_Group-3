@@ -15,9 +15,11 @@ public interface AccountRepository extends JpaRepository<SystemAccount, Long> {
 
     // tìm tài khoản theo Email
     Optional<SystemAccount> findByAccountEmail(String accountEmail);
+    Optional<SystemAccount> findByAccountEmailIgnoreCase(String accountEmail);
 
     // tìm tài khoản theo nam (hỗ trợ đăng nhập username Admin)
     Optional<SystemAccount> findByAccountName(String accountName);
+    Optional<SystemAccount> findByAccountNameIgnoreCase(String accountName);
 
     // kiểm tra email đã tồn tại chưa(dùng cho hàm tạo tài khoản sau này)
     boolean existsByAccountEmail(String accountEmail);
