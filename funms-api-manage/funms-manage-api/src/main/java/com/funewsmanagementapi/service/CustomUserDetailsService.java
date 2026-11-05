@@ -16,15 +16,18 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
+        String trimmed = (identifier == null) ? "" : identifier.trim();
         SystemAccount account;
-        if("Admin".equalsIgnoreCase(identifier)){
-            account =accountRepository.findByAccountName("FUNews Administrator")
-                    .or(() -> accountRepository.findByAccountEmail("admin@funews.edu"))
+
+        if ("Admin".equalsIgnoreCase(trimmed)) {
+            account = accountRepository.findByAccountNameIgnoreCase("Admin")
+                    .or(() -> accountRepository.findByAccountNameIgnoreCase("FUNews Administrator"))
+                    .or(() -> accountRepository.findByAccountEmailIgnoreCase("admin@funews.edu"))
                     .orElseThrow(() -> new UsernameNotFoundException("Admin account not found"));
         } else {
-            account = accountRepository.findByAccountEmail(identifier)
-                    .or(() -> accountRepository.findByAccountName(identifier))
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found with identifier: " + identifier));
+            account = accountRepository.findByAccountEmailIgnoreCase(trimmed)
+                    .or(() -> accountRepository.findByAccountNameIgnoreCase(trimmed))
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found with identifier: " + trimmed));
         }
 
         return new CustomUserDetails(account);
