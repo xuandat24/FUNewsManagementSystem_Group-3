@@ -12,4 +12,8 @@ public interface ContributorArticleService {
     ContributorArticleDto submit(Long id, Long authorId);
     // Minimum reviewer action needed to test feedback; full Editor workflow belongs to Actor 2.
     ContributorArticleDto requestChanges(Long id, Long editorId, String feedback);
+    List<ContributorArticleDto> reviewArticles();
+    List<ContributorArticleDto> pendingArticles();
+    ContributorArticleDto approve(Long id, Long editorId);
+    ContributorArticleDto reject(Long id, Long editorId, String feedback);
 }

@@ -9,12 +9,14 @@ const statusLabels = {
   PENDING_REVIEW: 'Đang chờ duyệt',
   CHANGES_REQUESTED: 'Cần chỉnh sửa',
   PUBLISHED: 'Đã xuất bản',
+  REJECTED: 'Bị từ chối',
 }
 const statusColors = {
   DRAFT: 'secondary',
   PENDING_REVIEW: 'warning',
   CHANGES_REQUESTED: 'danger',
   PUBLISHED: 'success',
+  REJECTED: 'danger',
 }
 
 export default function MyArticlesPage() {
@@ -69,6 +71,7 @@ export default function MyArticlesPage() {
       setSendingId(null)
     }
   }
+
 
   return <main className="container py-4">
     <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
