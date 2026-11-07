@@ -62,6 +62,13 @@ public class AuthController {
         return ApiResponseDto.success("Đăng nhập thành công!", response);
     }
 
+    @PostMapping("/logout")
+    @Operation(summary = "Đăng xuất hệ thống")
+    public ApiResponseDto<String> logout() {
+        SecurityContextHolder.clearContext();
+        return ApiResponseDto.success("Đăng xuất thành công!", "Token đã được hủy ở phía client.");
+    }
+
     @PostMapping("/register")
     @Operation(summary = "Đăng ký tài khoản (Mặc định quyền Staff)")
     public ApiResponseDto<String> register(@Valid @RequestBody RegisterRequestDto request) {
@@ -88,7 +95,7 @@ public class AuthController {
                 .roleName(roleName.replace("ROLE_", ""))
                 .build();
 
-        return ApiResponseDto.success("Lấy thông tin thành công!", null);
+        return ApiResponseDto.success("Lấy thông tin thành công!", response);
     }
 
     @GetMapping("/admin-only-test")
