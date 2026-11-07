@@ -2,7 +2,6 @@ package com.funewsmanagementapi.controller;
 
 import com.funewsmanagementapi.dto.request.ContributorArticleRequestDto;
 import com.funewsmanagementapi.dto.response.ContributorArticleDto;
-import com.funewsmanagementapi.security.RequireRole;
 import com.funewsmanagementapi.service.ContributorArticleService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -11,7 +10,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/contributor/articles")
-@RequireRole({2})
 public class ContributorArticleController {
     private final ContributorArticleService service;
 

@@ -2,7 +2,6 @@ package com.funewsmanagementapi.controller;
 
 import com.funewsmanagementapi.dto.request.CategoryRequestDto;
 import com.funewsmanagementapi.dto.response.CategoryResponseDto;
-import com.funewsmanagementapi.security.RequireRole;
 import com.funewsmanagementapi.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,7 +12,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequireRole({1, 2})
 @RestController
 @Tag(name = "Categories", description = "CRUD Categories")
 @RequestMapping("/api/v1/categories")

@@ -2,7 +2,6 @@ package com.funewsmanagementapi.controller;
 
 import com.funewsmanagementapi.dto.request.AccountRequestDto;
 import com.funewsmanagementapi.dto.response.AccountResponseDto;
-import com.funewsmanagementapi.security.RequireRole;
 import com.funewsmanagementapi.service.AccountService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RequireRole({1})
 @RestController
 @RequestMapping("/api/v1/admin/accounts")
 public class AccountController {
