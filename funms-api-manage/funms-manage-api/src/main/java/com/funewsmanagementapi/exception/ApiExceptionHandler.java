@@ -2,6 +2,7 @@ package com.funewsmanagementapi.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -13,14 +14,21 @@ public class ApiExceptionHandler {
     public ResponseEntity<Map<String, String>> notFound(RecordNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
     }
+
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<Map<String, String>> badRequest(BadRequestException e) {
         return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> invalid(MethodArgumentNotValidException e) {
         String message = e.getBindingResult().getFieldErrors().isEmpty() ? "Du lieu khong hop le"
                 : e.getBindingResult().getFieldErrors().getFirst().getField() + ": khong hop le";
         return ResponseEntity.badRequest().body(Map.of("message", message));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, String>> accessDenied(AccessDeniedException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "Từ chối truy cập: Bạn không có quyền thực hiện chức năng này!"));
     }
 }
