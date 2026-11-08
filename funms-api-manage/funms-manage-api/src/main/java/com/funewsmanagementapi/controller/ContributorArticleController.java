@@ -5,11 +5,13 @@ import com.funewsmanagementapi.dto.response.ContributorArticleDto;
 import com.funewsmanagementapi.service.ContributorArticleService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/contributor/articles")
+@PreAuthorize("hasRole('STAFF')")
 public class ContributorArticleController {
     private final ContributorArticleService service;
 
@@ -42,7 +44,6 @@ public class ContributorArticleController {
         return service.update(id, userId, data);
     }
 
-    // For both first submission and resubmission after feedback.
     @PostMapping("/{id}/submit")
     public ContributorArticleDto submit(@PathVariable Long id,
             @RequestAttribute("currentUserId") Long userId) {

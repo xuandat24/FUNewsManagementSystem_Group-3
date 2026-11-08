@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.List;
 @Tag(name = "Tags", description = "CRUD Tags")
 @RestController
 @RequestMapping("/api/v1/tags")
+@PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
 public class TagController {
     private final TagService tagService;
 

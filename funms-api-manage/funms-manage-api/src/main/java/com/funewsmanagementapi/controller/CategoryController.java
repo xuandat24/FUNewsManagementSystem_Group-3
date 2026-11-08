@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.List;
 @RestController
 @Tag(name = "Categories", description = "CRUD Categories")
 @RequestMapping("/api/v1/categories")
+@PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
 public class CategoryController {
     @Autowired
     private final CategoryService categoryService;
@@ -62,6 +64,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "200", description = "Active categories fetched successfully")
     })
     @GetMapping("/active")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<Page<CategoryResponseDto>> findAllActive(
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
@@ -74,6 +77,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "200", description = "Active categories list for dropdown")
     })
     @GetMapping("/all")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<List<CategoryResponseDto>> getAllActiveForDropdown() {
         return ResponseEntity.ok(categoryService.findAllByIsActiveTrue());
     }

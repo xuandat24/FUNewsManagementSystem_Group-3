@@ -1,6 +1,5 @@
 package com.funewsmanagementapi.security;
 
-
 import com.funewsmanagementapi.service.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -43,6 +42,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                if (userDetails instanceof CustomUserDetails customUserDetails && customUserDetails.getSystemAccount() != null) {
+                    request.setAttribute("currentUserId", customUserDetails.getSystemAccount().getAccountId());
+                    request.setAttribute("currentUserRole", customUserDetails.getSystemAccount().getAccountRole());
+                }
             }
         } catch (Exception e){
             logger.error("Cannot set user authentication: {}", e.getMessage());
