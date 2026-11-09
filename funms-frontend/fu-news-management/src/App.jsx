@@ -31,17 +31,15 @@ function Site() {
   }
   const isAdmin = user && Number(user.accountRole) === 1
   const isContributor = user && Number(user.accountRole) === 2
-  const inAdminArea = location.pathname === '/admin' || location.pathname.startsWith('/admin/')
+  const inWorkspaceArea = location.pathname.startsWith('/admin') || location.pathname.startsWith('/contributor/') || location.pathname.startsWith('/manage/')
 
   return <>
-    {!inAdminArea && <header className="site-nav"><div className="container nav-content">
-      <Link className="brand" to={isAdmin ? '/admin' : '/'}>FU News</Link>
+    {!inWorkspaceArea && <header className="site-nav"><div className="container nav-content">
+      <Link className="brand" to={isAdmin ? '/admin' : isContributor ? '/contributor/my-articles' : '/'}>FU News</Link>
       <nav className="nav-links" aria-label="Điều hướng chính">
         <Link to="/public">Trang chủ</Link>
         {isAdmin && <Link to="/admin">Quản trị Admin</Link>}
-        {isContributor && <Link to="/contributor/my-articles">Bài viết của tôi</Link>}
-        {isContributor && <Link to="/manage/categories">Danh mục</Link>}
-        {isContributor && <Link to="/manage/tags">Tag</Link>}
+        {isContributor && <Link to="/contributor/my-articles">Khu vực làm việc</Link>}
       </nav>
       <div className="nav-auth">
         {user ? <><span className="nav-user">{user.accountName}</span><button className="auth-button auth-login" onClick={logout}>Đăng xuất</button></> : <>
@@ -52,7 +50,7 @@ function Site() {
     </div></header>}
 
     <Routes>
-      <Route path="/" element={isAdmin ? <Navigate to="/admin" replace /> : <CustomerHomePage />} />
+      <Route path="/" element={isAdmin ? <Navigate to="/admin" replace /> : isContributor ? <Navigate to="/contributor/my-articles" replace /> : <CustomerHomePage />} />
       <Route path="/public" element={<CustomerHomePage />} />
       <Route path="/news/:id" element={<NewsDetailPage />} />
       <Route path="/login" element={user ? <Navigate to={isAdmin ? '/admin' : '/contributor/my-articles'} replace /> :
@@ -63,7 +61,6 @@ function Site() {
       <Route path="/register" element={user ? <Navigate to={isAdmin ? '/admin' : '/contributor/my-articles'} replace /> :
         <Register onSwitchToLogin={() => navigate('/login')} />} />
 
-      {/* admin part */}
       <Route path="/admin" element={isAdmin ? <AdminLayout user={user} onLogout={logout} /> : <Navigate to={user ? '/' : '/login'} replace />}>
         <Route index element={<AdminDashboardPage />} />
         <Route path="reviews" element={<AdminReviewPage />} />
@@ -73,10 +70,13 @@ function Site() {
         <Route path="accounts" element={<AccountManagement />} />
       </Route>
 
-      <Route path="/contributor/my-articles" element={isContributor ? <MyArticlesPage /> : <Navigate to={isAdmin ? '/admin' : '/login'} replace />} />
-      <Route path="/manage/categories" element={isAdmin ? <Navigate to="/admin/categories" replace /> : isContributor ? <CategoryManagementPage /> : <Navigate to="/login" replace />} />
-      <Route path="/manage/tags" element={isAdmin ? <Navigate to="/admin/tags" replace /> : isContributor ? <TagManagementPage /> : <Navigate to="/login" replace />} />
-      <Route path="*" element={<Navigate to={isAdmin ? '/admin' : '/'} replace />} />
+      <Route element={isContributor ? <AdminLayout user={user} onLogout={logout} /> : <Navigate to={user ? '/' : '/login'} replace />}>
+        <Route path="/contributor/my-articles" element={<MyArticlesPage />} />
+        <Route path="/manage/categories" element={<CategoryManagementPage />} />
+        <Route path="/manage/tags" element={<TagManagementPage />} />
+      </Route>
+
+      <Route path="*" element={<Navigate to={isAdmin ? '/admin' : isContributor ? '/contributor/my-articles' : '/'} replace />} />
     </Routes>
   </>
 }
