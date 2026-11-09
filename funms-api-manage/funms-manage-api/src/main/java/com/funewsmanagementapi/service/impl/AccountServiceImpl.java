@@ -35,7 +35,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public AccountResponseDto findById(Long id) {
         SystemAccount account = accountRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Không tìm thấy tài khoản với id " + id));
 
@@ -43,12 +42,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Page<AccountResponseDto> findAllAccounts(String keyword, Integer role, Pageable pageable) {
         String search = (keyword == null || keyword.trim().isEmpty()) ? null : keyword.trim();
         Page<SystemAccount> accountPage = accountRepository.searchAccounts(search, role, pageable);
 
-        return accountPage.map(this::toDto);
+        return accountPage.map(acc -> toDto(acc));
     }
 
     @Override
