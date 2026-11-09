@@ -1,6 +1,7 @@
 package com.funewsmanagementapi.service;
 
 import com.funewsmanagementapi.dto.request.NewsArticleRequestDto;
+import com.funewsmanagementapi.dto.response.NewsArticleResponseDto;
 import com.funewsmanagementapi.dto.response.NewsDetailDto;
 import com.funewsmanagementapi.entity.*;
 import com.funewsmanagementapi.exception.BadRequestException;
@@ -117,5 +118,27 @@ public class NewsArticleService {
                 a.getCreatedBy() == null ? "Khong ro" : a.getCreatedBy().getAccountName(),
                 a.getCreatedDate(), a.getModifiedDate(),
                 a.getTags().stream().map(Tag::getTagId).collect(Collectors.toSet()));
+    }
+
+    public List<NewsArticleResponseDto> getPendingArticles() {
+        return newsRepository.findArticlesByWorkflowStatus(WorkflowStatus.PENDING_REVIEW);
+    }
+
+    @Transactional
+    public void approveArticle(Long id, Long editorId){
+        NewsArticle article = newsRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Không tìm thấy bài viết với id " + id));
+
+        if(!WorkflowStatus.PENDING_REVIEW.equals(article.getWorkflowStatus())){
+            throw new BadRequestException("Chỉ có thể duyệt bài đang chờ phê duyệt!");
+        }
+
+        SystemAccount editor = accountRepository.findById(editorId)
+                .orElseThrow(() -> new RecordNotFoundException("Không tìm thấy tài khoản Editor"));
+
+        article.setWorkflowStatus(WorkflowStatus.PUBLISHED);
+        article.setNewsStatus(true);
+        article.setReviewFeedback(null);
+        article.setUpdatedBy(editor);
+        newsRepository.save(article);
     }
 }

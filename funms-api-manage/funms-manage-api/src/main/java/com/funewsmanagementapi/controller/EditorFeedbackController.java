@@ -2,15 +2,14 @@ package com.funewsmanagementapi.controller;
 
 import com.funewsmanagementapi.dto.request.EditorFeedbackRequestDto;
 import com.funewsmanagementapi.dto.response.ContributorArticleDto;
-import com.funewsmanagementapi.security.RequireRole;
 import com.funewsmanagementapi.service.ContributorArticleService;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-// Review endpoints protected by Admin role from AuthInterceptor.
 @RestController
 @RequestMapping("/api/v1/editor/articles")
-@RequireRole({1})
+@PreAuthorize("hasRole('ADMIN')")
 public class EditorFeedbackController {
     private final ContributorArticleService service;
 
