@@ -1,20 +1,6 @@
-import axios from "axios";
+import httpClient from "./httpClient";
 
-const BASE_URL =
-  import.meta.env.VITE_ACCOUNTS_API_URL ||
-  "http://localhost:8080/api/v1/admin/accounts";
-
-const getAuthHeaders = () => {
-  const token = localStorage.getItem("token");
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
-
-const handleAxiosError = (err, defaultMsg) => {
-  const res = err.response;
-  const data = res?.data;
-  const serverMsg = data?.message || err?.message || defaultMsg;
-  throw new Error(serverMsg);
-};
+const BASE = "/admin/accounts"; 
 
 export async function getAccounts(
   page = 0,
@@ -22,9 +8,7 @@ export async function getAccounts(
   keyword = "",
   role = "",
 ) {
-  try {
-    const res = await axios.get(BASE_URL, {
-      headers: getAuthHeaders(),
+    const res = await httpClient.get(BASE, { 
       params: {
         page,
         size,
@@ -33,51 +17,24 @@ export async function getAccounts(
       },
     });
     return res.data;
-  } catch (err) {
-    handleAxiosError(err, "Lỗi khi tải danh sách tài khoản");
-  }
 }
 
 export async function getAccountById(id) {
-  try {
-    const res = await axios.get(`${BASE_URL}/${id}`, {
-      headers: getAuthHeaders(),
-    });
+    const res = await httpClient.get(`${BASE}/${id}`);
     return res.data;
-  } catch (err) {
-    handleAxiosError(err, "Lỗi khi lấy thông tin tài khoản");
-  }
 }
 
 export async function createAccount(data) {
-  try {
-    const res = await axios.post(BASE_URL, data, {
-      headers: getAuthHeaders(),
-    });
+    const res = await httpClient.post(BASE, data);
     return res.data;
-  } catch (err) {
-    handleAxiosError(err, "Lỗi khi tạo tài khoản");
-  }
 }
 
 export async function updateAccount(id, data) {
-  try {
-    const res = await axios.put(`${BASE_URL}/${id}`, data, {
-      headers: getAuthHeaders(),
-    });
+    const res = await httpClient.put(`${BASE}/${id}`, data);
     return res.data;
-  } catch (err) {
-    handleAxiosError(err, "Lỗi khi cập nhật tài khoản");
-  }
 }
 
 export async function deleteAccount(id) {
-  try {
-    const res = await axios.delete(`${BASE_URL}/${id}`, {
-      headers: getAuthHeaders(),
-    });
+    const res = await httpClient.delete(`${BASE}/${id}`);
     return res.data;
-  } catch (err) {
-    handleAxiosError(err, "Lỗi khi xóa tài khoản");
-  }
 }
